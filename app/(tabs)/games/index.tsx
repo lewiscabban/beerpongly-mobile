@@ -8,20 +8,19 @@ interface Box {
   title: string;
   body: string;
   navigation: string;
-  page: string;
 }
 
 const data: Box[] = [
-  { id: '1', title: 'Tournament', body: 'Play a tournament.', navigation: 'tournament', page: 'addTournament' },
-  // { id: '2', title: 'King of the Table', body: 'Consectetur adipiscing elit.', },
+  { id: '1', title: 'Tournament 1', body: 'In Progress', navigation: 'tournaments'},
+  // { id: '2', title: 'Box 2', body: 'Consectetur adipiscing elit.', },
   // { id: '3', title: 'Box 3', body: 'Sed do eiusmod tempor incididunt.', },
   // { id: '4', title: 'Box 4', body: 'Ut labore et dolore magna aliqua.', },
   // { id: '5', title: 'Box 5', body: 'Ut enim ad minim veniam.', },
 ];
 
-export default function HomeScreen() {
+export default function TabTwoScreen() {
   const renderItem = ({ item }: { item: Box }) => (
-    <Link href={item.navigation + "/" + item.page}>
+    <Link href={"games/" + item.navigation + "/" + item.id}>
       <View style={styles.box}>
         <View style={styles.boxContent}>
           <Text style={styles.title}>{item.title}</Text>
@@ -39,6 +38,14 @@ export default function HomeScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
+      <Link href={"games/tournaments/addTournament"}>
+        <View style={styles.box}>
+          <View style={styles.boxContent}>
+            <Text style={styles.title}>Add Game</Text>
+          </View>
+          <MaterialIcons name="arrow-forward" size={24} color="black" />
+        </View>
+      </Link>
     </View>
   );
 }
