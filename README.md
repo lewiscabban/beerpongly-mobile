@@ -48,3 +48,44 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+# Documentation
+
+This section explains all the documentation relating to the project.
+
+## Database
+
+### Tournament
+
+---------------------------------------------
+| Variable | Type      | Notes              |
+---------------------------------------------
+| ID       | int       | unique primary key |
+| Progress | string    |                    |
+| Name     | string    |                    |
+
+### Team
+
+----------------------------------------------
+| Variable     | Type   | Notes              |
+----------------------------------------------
+| ID           | int    | unique primary key |
+| TeamName     | string |                    |
+| TournamentID | string | Frogin key         |
+
+### Match
+
+-----------------------------------------------------
+| Variable              | Type | Notes              |
+-----------------------------------------------------
+| ID                    | int  | unique primary key |
+| TournamentID          | int  | Frogin key         |
+| FirstTeam             | int  | Frogin key         |
+| SecondTeam            | int  | Frogin key         |
+| FirstTeamCups         | int  |                    |
+| SecondTeamCups        | int  |                    |
+| Winner                | int  | Frogin key         |
+| FirstPrevioudMatchID  | int  | Frogin key         |
+| SecondPrevioudMatchID | int  | Frogin key         |
+| NextMatchID           | int  | Frogin key         |
+| Round                 | int  | Frogin key         |

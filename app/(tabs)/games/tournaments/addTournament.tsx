@@ -3,57 +3,64 @@ import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-nat
 import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { 
+  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments,
+  Team, createTeamTable, insertTeam, getTeams,
+} from '@/db/tournament';
+
+interface InputTeam {
+  id: number;
+  name: string;
+}
 
 interface Input {
-  id: number;
-  value: string;
+  name: string;
+  teams: InputTeam[];
+  navigation: string;
+  progress: string;
 }
 
 export default function AddTournament() {
-  const [inputs, setInputs] = useState<Input[]>([{ id: 1, value: '' }]);
+  const [input, setInput] = useState<Input>({
+    name: '',
+    teams: [{ id: 1, name: '' }],
+    navigation: '',
+    progress: ''
+  });
 
-  useEffect(() => {
-    const loadInputs = async () => {
-      try {
-        const storedData = await AsyncStorage.getItem('inputs');
-        if (storedData) {
-          const parsedData: string[][] = JSON.parse(storedData);
-          const loadedInputs = parsedData.map((list, index) => ({
-            id: index + 1,
-            value: list.join(', '),
-          }));
-          setInputs(loadedInputs);
-        }
-      } catch (error) {
-        console.error('Failed to load inputs from AsyncStorage', error);
-      }
-    };
-
-    loadInputs();
-  }, []);
-
-  const handleAddInput = () => {
-    const newInput: Input = { id: inputs.length + 1, value: '' };
-    setInputs([...inputs, newInput]);
+  const handleAddTeam = () => {
+    const newId = input.teams.length + 1;
+    const newTeam: InputTeam = { id: newId, name: '' };
+    setInput({ ...input, teams: [...input.teams, newTeam] });
   };
 
-  const handleInputChange = (id: number, text: string) => {
-    const newInputs = inputs.map(input => {
-      if (input.id === id) {
-        return { ...input, value: text };
+  const handleTeamChange = (teamId: number, text: string) => {
+    const newTeams = input.teams.map(team => {
+      if (team.id === teamId) {
+        return { ...team, name: text };
       }
-      return input;
+      return team;
     });
-    setInputs(newInputs);
+    setInput({ ...input, teams: newTeams });
+  };
+
+  const handleNameChange = (text: string) => {
+    setInput({ ...input, name: text });
   };
 
   const handleSubmit = async () => {
     try {
-      const formattedInputs = inputs.map(input => input.value.split(', '));
-      await AsyncStorage.setItem('inputs', JSON.stringify(formattedInputs));
-      console.log('Saved inputs:', formattedInputs);
+      const db = await initTournamentDB()
+      await createTournamentTable(db);
+      const tournamentId = await insertTournament(db, input.name, input.progress);
+      await createTeamTable(db)
+      input.teams.map(async (team) => {
+        await insertTeam(db, team.name, tournamentId)
+      })
+      console.log(await getTeams(db, tournamentId))
+      console.log('Saved input:', JSON.stringify(input));
     } catch (error) {
-      console.error('Failed to save inputs to AsyncStorage', error);
+      console.error('Failed to save input to AsyncStorage', error);
     }
   };
 
@@ -64,23 +71,31 @@ export default function AddTournament() {
           <Text style={styles.title}>Set Bracket</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
-        <Link href={"games/tournaments/1/setBracket"}>
+        <Link href="games/tournaments/1/setBracket">
           <View style={styles.linkBox}>
             <Text style={styles.linkText}>Go to Set Bracket</Text>
           </View>
         </Link>
       </View>
-      {inputs.map(input => (
-        <View key={input.id} style={styles.inputContainer}>
-          <Text>Team {input.id}:</Text>
+      <View style={styles.inputContainer}>
+        <Text>Enter Tournament Name:</Text>
+        <TextInput
+          style={styles.input}
+          value={input.name}
+          onChangeText={handleNameChange}
+        />
+      </View>
+      {input.teams.map(team => (
+        <View key={team.id} style={styles.inputContainer}>
+          <Text>Team {team.id}:</Text>
           <TextInput
             style={styles.input}
-            value={input.value}
-            onChangeText={text => handleInputChange(input.id, text)}
+            value={team.name}
+            onChangeText={text => handleTeamChange(team.id, text)}
           />
         </View>
       ))}
-      <Button title="Add Team" onPress={handleAddInput} />
+      <Button title="Add Team" onPress={handleAddTeam} />
       <Button title="Submit" onPress={handleSubmit} />
     </ScrollView>
   );
@@ -113,8 +128,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     marginBottom: 10,
   },
   input: {
@@ -122,6 +137,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 8,
     marginLeft: 8,
+    marginTop: 5,
     width: 200,
   },
   linkText: {

@@ -1,30 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { Tournament, initTournamentDB, createTournamentTable, getTournaments } from '@/db/tournament';
 
-interface Box {
-  id: string;
-  title: string;
-  body: string;
-  navigation: string;
-}
-
-const data: Box[] = [
-  { id: '1', title: 'Tournament 1', body: 'In Progress', navigation: 'tournaments'},
-  // { id: '2', title: 'Box 2', body: 'Consectetur adipiscing elit.', },
-  // { id: '3', title: 'Box 3', body: 'Sed do eiusmod tempor incididunt.', },
-  // { id: '4', title: 'Box 4', body: 'Ut labore et dolore magna aliqua.', },
-  // { id: '5', title: 'Box 5', body: 'Ut enim ad minim veniam.', },
-];
 
 export default function TabTwoScreen() {
-  const renderItem = ({ item }: { item: Box }) => (
-    <Link href={"games/" + item.navigation + "/" + item.id}>
+  const [inputs, setInputs] = useState<Tournament[]>([]);
+
+  useEffect(() => {
+    async function createTables() {
+      const db = await initTournamentDB()
+      await createTournamentTable(db);
+      setInputs(await getTournaments(db));
+    }
+
+    createTables();
+  }, []);
+
+  useEffect(() => {
+    console.log("inputs: " + inputs.length)
+  }, [inputs])
+
+  const renderItem = ({ item }: { item: Tournament }) => (
+    <Link href={"games/tournaments/" + item.id}>
       <View style={styles.box}>
         <View style={styles.boxContent}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.body}>{item.body}</Text>
+          <Text style={styles.title}>{item.name}</Text>
+          <Text style={styles.body}>{item.progress}</Text>
+          <Text style={styles.body}>{item.id}</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
       </View>
@@ -34,14 +38,14 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data}
+        data={inputs}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => String(index)}
       />
       <Link href={"games/tournaments/addTournament"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
-            <Text style={styles.title}>Add Game</Text>
+            <Text style={styles.title}>Add Tournament</Text>
           </View>
           <MaterialIcons name="arrow-forward" size={24} color="black" />
         </View>
@@ -55,6 +59,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#fff',
   },
   box: {
     flexDirection: 'row',
