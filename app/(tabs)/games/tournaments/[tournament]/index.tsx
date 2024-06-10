@@ -1,13 +1,15 @@
 import { Image, StyleSheet, View, Text } from 'react-native';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
 
 export default function SettingsScreen() {
-  const params = useLocalSearchParams();
+  const path = usePathname();
+  const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
+
   return (
     <View style={styles.container}>
-      <Link href={"games/tournaments/1/1"}>
+      <Link href={"games/tournaments/" + tournamentId + "/1"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
             <Text style={styles.title}>Play Match</Text>
@@ -16,7 +18,7 @@ export default function SettingsScreen() {
         </View>
       </Link>
 
-      <Link href={"games/tournaments/1/setBracket"}>
+      <Link href={"games/tournaments/" + tournamentId + "/setBracket"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
             <Text style={styles.title}>Edit Tournament</Text>
@@ -25,7 +27,7 @@ export default function SettingsScreen() {
         </View>
       </Link>
 
-      <Link href={"games/tournaments/1/winner"}>
+      <Link href={"games/tournaments/" + tournamentId + "/winner"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
             <Text style={styles.title}>Winners</Text>
@@ -34,7 +36,7 @@ export default function SettingsScreen() {
         </View>
       </Link>
 
-      <Link href={"games/tournaments/1/leaderboard"}>
+      <Link href={"games/tournaments/" + tournamentId + "/leaderboard"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
             <Text style={styles.title}>Leaderboard</Text>

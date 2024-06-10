@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
@@ -49,18 +49,37 @@ export default function AddTournament() {
   };
 
   const handleSubmit = async () => {
-    try {
-      const db = await initTournamentDB()
-      await createTournamentTable(db);
-      const tournamentId = await insertTournament(db, input.name, input.progress);
-      await createTeamTable(db)
-      input.teams.map(async (team) => {
-        await insertTeam(db, team.name, tournamentId)
-      })
-      console.log(await getTeams(db, tournamentId))
-      console.log('Saved input:', JSON.stringify(input));
-    } catch (error) {
-      console.error('Failed to save input to AsyncStorage', error);
+    let isComplete: boolean = true
+    for (let i = 0; i < input.teams.length; i++) {
+      const team = input.teams[i];
+      if (team.name == "") {
+        isComplete = false;
+        console.log("Team " + (i + 1) + " cannot be empty.");
+      }
+    }
+    if (input.teams.length >= 4 && isComplete && input.name != "") {
+      try {
+        const db = await initTournamentDB()
+        await createTournamentTable(db);
+        const tournamentId = await insertTournament(db, input.name, input.progress);
+        await createTeamTable(db)
+        for (let i = 0; i < input.teams.length; i++) {
+          const team = input.teams[i];
+          await insertTeam(db, team.name, i+1, tournamentId)
+        }
+        console.log(await getTeams(db, tournamentId))
+        console.log('Saved input:', JSON.stringify(input));
+        router.push("games/tournaments/" + tournamentId + "/setBracket");
+      } catch (error) {
+        console.error('Failed to save input to AsyncStorage', error);
+      }
+    } else {
+      if (input.teams.length < 4) {
+        console.log("minimum teams is 4, got: " + input.teams.length);
+      }
+      if (input.name == "") {
+        console.log("Team name cannot be empty.")
+      }
     }
   };
 
@@ -71,11 +90,6 @@ export default function AddTournament() {
           <Text style={styles.title}>Set Bracket</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
-        <Link href="games/tournaments/1/setBracket">
-          <View style={styles.linkBox}>
-            <Text style={styles.linkText}>Go to Set Bracket</Text>
-          </View>
-        </Link>
       </View>
       <View style={styles.inputContainer}>
         <Text>Enter Tournament Name:</Text>

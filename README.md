@@ -71,6 +71,7 @@ This section explains all the documentation relating to the project.
 ----------------------------------------------
 | ID           | int    | unique primary key |
 | TeamName     | string |                    |
+| Position     | number | unique and ordered |
 | TournamentID | string | Frogin key         |
 
 ### Match
