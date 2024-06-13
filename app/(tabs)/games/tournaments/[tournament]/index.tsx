@@ -1,14 +1,46 @@
-import { Image, StyleSheet, View, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Image, StyleSheet, FlatList, View, Text } from 'react-native';
 import { Link, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { 
+  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
+  Team, createTeamTable, insertTeam, getTeams, updateTeams,
+} from '@/db/tournament';
 
 
 export default function SettingsScreen() {
+  const [tournament, setTournament] = useState<Tournament | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
 
+  useEffect(() => {
+    async function createTables() {
+      const db = await initTournamentDB();
+      await createTournamentTable(db);
+      setTournament(await getTournament(db, tournamentId));
+      setTeams(await getTeams(db, tournamentId));
+    }
+
+    createTables();
+  }, []);
+
+  const renderItem = ({ item }: { item: Team }) => (
+    <View style={styles.box}>
+      <View style={styles.boxContent}>
+        <Text style={styles.title}>position: {item.position} Name: {item.name}</Text>
+      </View>
+      <MaterialIcons name="arrow-forward" size={24} color="black" />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
+    <FlatList
+      data={teams}
+      renderItem={renderItem}
+      keyExtractor={(item) => String(item.id)}
+    />
       <Link href={"games/tournaments/" + tournamentId + "/1"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>

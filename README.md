@@ -81,6 +81,7 @@ This section explains all the documentation relating to the project.
 -----------------------------------------------------
 | ID                    | int  | unique primary key |
 | TournamentID          | int  | Frogin key         |
+| Round                 | int  |                    |
 | FirstTeam             | int  | Frogin key         |
 | SecondTeam            | int  | Frogin key         |
 | FirstTeamCups         | int  |                    |
