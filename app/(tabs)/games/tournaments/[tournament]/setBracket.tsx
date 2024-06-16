@@ -6,8 +6,7 @@ import {
   Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
   Team, createTeamTable, insertTeam, getTeams, updateTeams,
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
-  deleteMatch,
-  deleteMatches,
+  deleteMatch, deleteMatches,
 } from '@/db/tournament';
 
 

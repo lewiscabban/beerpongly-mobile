@@ -5,12 +5,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { 
   Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
   Team, createTeamTable, insertTeam, getTeams, updateTeams,
+  Match, createMatchTable, insertMatch, getMatches, updateMatches,
+  deleteMatch, deleteMatches,
 } from '@/db/tournament';
 
 
 export default function SettingsScreen() {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
 
@@ -20,35 +23,39 @@ export default function SettingsScreen() {
       await createTournamentTable(db);
       setTournament(await getTournament(db, tournamentId));
       setTeams(await getTeams(db, tournamentId));
+      setMatches(await getMatches(db, tournamentId));
     }
 
     createTables();
   }, []);
 
-  const renderItem = ({ item }: { item: Team }) => (
-    <View style={styles.box}>
-      <View style={styles.boxContent}>
-        <Text style={styles.title}>position: {item.position} Name: {item.name}</Text>
+  const renderItem = ({ item }: { item: Match }) => (
+    <Link href={"games/tournaments/" + tournamentId + "/" + item.id}>
+      <View style={styles.box}>
+        <View style={styles.boxContent}>
+          <Text style={styles.title}>T1: {item.firstTeam} Cups: {item.firstTeamCups}</Text>
+          <Text style={styles.title}>T2: {item.secondTeam} Cups: {item.secondTeamCups}</Text>
+        </View>
+        <MaterialIcons name="arrow-forward" size={24} color="black" />
       </View>
-      <MaterialIcons name="arrow-forward" size={24} color="black" />
-    </View>
+    </Link>
   );
 
   return (
     <View style={styles.container}>
     <FlatList
-      data={teams}
+      data={matches}
       renderItem={renderItem}
       keyExtractor={(item) => String(item.id)}
     />
-      <Link href={"games/tournaments/" + tournamentId + "/1"}>
+      {/* <Link href={"games/tournaments/" + tournamentId + "/1"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
             <Text style={styles.title}>Play Match</Text>
           </View>
           <MaterialIcons name="arrow-forward" size={24} color="black" />
         </View>
-      </Link>
+      </Link> */}
 
       <Link href={"games/tournaments/" + tournamentId + "/setBracket"}>
         <View style={styles.box}>

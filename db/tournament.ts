@@ -92,6 +92,11 @@ export const getTeams = async (db: SQLite.SQLiteDatabase, tournamentId: number):
     return allRows
 };
 
+export const getTeam = async (db: SQLite.SQLiteDatabase, id: number): Promise<Team | null> => {
+    const team: Team | null = await db.getFirstAsync('SELECT * FROM team WHERE id = ?', id);
+    return team
+};
+
 export const createMatchTable = async (db: SQLite.SQLiteDatabase): Promise<void> => {
     // const alter = await db.runAsync("ALTER TABLE team ADD COLUMN position INTEGER")
     const table = await db.runAsync(`
@@ -153,6 +158,32 @@ export const updateMatches = async (db: SQLite.SQLiteDatabase, matches: Match[])
             match.id);
         console.log("results: " + result)
     }
+};
+
+export const updateMatch = async (db: SQLite.SQLiteDatabase, match: Match): Promise<void> => {
+    const result = await db.runAsync(`
+        UPDATE match SET
+        round = ?,
+        firstTeam = ?,
+        secondTeam = ?,
+        firstTeamCups = ?,
+        secondTeamCups = ?,
+        winner = ?,
+        firstPreviousMatchId = ?,
+        secondPreviousMatchId = ?,
+        nextMatch = ?
+        WHERE id = ?`,
+        match.round,
+        match.firstTeam,
+        match.secondTeam,
+        match.firstTeamCups,
+        match.secondTeamCups,
+        match.winner,
+        match.firstPreviousMatchId,
+        match.secondPreviousMatchId,
+        match.nextMatch,
+        match.id);
+        console.log("results: " + result)
 };
 
 export const deleteMatches = async (db: SQLite.SQLiteDatabase, matches: Match[]): Promise<void> => {
