@@ -28,6 +28,22 @@ export interface Match {
     tournamentId: number;
 }
 
+export interface Round {
+    id: number;
+    matches: Match[]
+}
+
+export const getTotalRounds = (teams: Team[]): number => {
+    let currentTeams = teams.length;
+    let totalRounds = 0;
+    // Calculating the total number of rounds
+    while (currentTeams > 1) {
+        currentTeams /= 2;
+        totalRounds++;
+    }
+    return totalRounds;
+}
+
 export const initTournamentDB = async (): Promise<SQLite.SQLiteDatabase> => {
     return await SQLite.openDatabaseAsync('tournament');
 };
@@ -41,6 +57,12 @@ export const createTournamentTable = async (db: SQLite.SQLiteDatabase): Promise<
         )
     `);
     console.log("table: " + table)
+};
+
+export const updateTournament = async (db: SQLite.SQLiteDatabase, tournament: Tournament): Promise<number> => {
+    const result = await db.runAsync('UPDATE tournament SET progress = ?, name = ? WHERE id = ?', tournament.progress, tournament.name, tournament.id);
+    console.log("insert: " + result)
+    return result.lastInsertRowId
 };
 
 export const insertTournament = async (db: SQLite.SQLiteDatabase, name: string, progress: string): Promise<number> => {

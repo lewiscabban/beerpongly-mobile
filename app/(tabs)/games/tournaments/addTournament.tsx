@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments,
   Team, createTeamTable, insertTeam, getTeams,
+  getTotalRounds,
 } from '@/db/tournament';
 
 interface InputTeam {
@@ -63,9 +64,21 @@ export default function AddTournament() {
         await createTournamentTable(db);
         const tournamentId = await insertTournament(db, input.name, input.progress);
         await createTeamTable(db)
-        for (let i = 0; i < input.teams.length; i++) {
-          const team = input.teams[i];
-          await insertTeam(db, team.name, i+1, tournamentId)
+        let currentTeams = input.teams.length;
+        let totalRounds = 0;
+        // Calculating the total number of rounds
+        while (currentTeams > 1) {
+            currentTeams /= 2;
+            totalRounds++;
+        }
+
+        for (let i = 0; i < Math.pow(2, totalRounds); i++) {
+          if (input.teams[i]) {
+            const team = input.teams[i];
+            await insertTeam(db, team.name, i+1, tournamentId)
+          } else {
+            await insertTeam(db, "", i+1, tournamentId)
+          }
         }
         console.log(await getTeams(db, tournamentId))
         console.log('Saved input:', JSON.stringify(input));

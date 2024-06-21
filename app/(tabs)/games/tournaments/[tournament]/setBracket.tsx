@@ -7,6 +7,7 @@ import {
   Team, createTeamTable, insertTeam, getTeams, updateTeams,
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
   deleteMatch, deleteMatches,
+  getTotalRounds,
 } from '@/db/tournament';
 
 
@@ -26,6 +27,22 @@ export default function SetBracket() {
 
     createTables();
   }, []);
+
+  // useEffect(() => {
+  //   let totalRounds = getTotalRounds(teams);
+  //   let newTeams = [...teams]
+  //   const numberOfFirstRoundTeams = Math.pow(2, totalRounds)
+  //   console.log("requited first round teams: " + numberOfFirstRoundTeams)
+
+  //   while (teams.length < numberOfFirstRoundTeams) {
+  //     newTeams.push({
+  //       id: number;
+  //       name: string;
+  //       position: number;
+  //       tournamentId: number;
+  //     })
+  //   }
+  // }, [teams]);
 
   function shuffle(array: Team[]) {
     let currentIndex = array.length;
@@ -58,8 +75,7 @@ export default function SetBracket() {
   );
 
   const createMatches = async () => {
-    let currentTeams = teams.length;
-    let totalRounds = 0;
+    let totalRounds = getTotalRounds(teams);
     const db = await initTournamentDB();
     await createMatchTable(db);
     let matches = await getMatches(db, tournamentId)
@@ -67,29 +83,31 @@ export default function SetBracket() {
       await deleteMatches(db, matches)
     }
     console.log("deleted matches: " + matches)
-    while (currentTeams > 1) {
-      currentTeams /= 2;
-      totalRounds++;
-    }
+
+    // Calculating the total number of rounds
+    
     console.log("rounds count: " + totalRounds)
     matches = []
+
+    // Create initial matches
     for (let i = totalRounds; i >= 0; i--) {
       for (let j = 0; j < Math.pow(2, i) - 1; j+=2) {
+        console.log("teams in round: " + Math.pow(2,i))
         console.log("creating match")
-        let firstTeam = null;
-        let secondTeam = null;
+        let firstTeam: number | null = null;
+        let secondTeam: number | null = null;
         if (i == totalRounds) {
-          firstTeam = teams[j].id;
-          secondTeam = teams[j+1].id;
+          if (teams[j]) {firstTeam = teams[j].id; console.log(firstTeam)}
+          if (teams[j+1]) {secondTeam = teams[j+1].id; console.log(secondTeam)}
         }
         let result: Match | null = await insertMatch(db, totalRounds - i + 1, firstTeam, secondTeam, 0, 0, null, null, null, null, tournamentId);
-        console.log(result)
+        console.log(result?.firstTeam)
         if (result) {
           matches.push(result);
         }
       }
     }
-    // matches = await getMatches(db, tournamentId);
+    // return
     console.log("organising matches: " + matches)
     let lastRound = 1;
     let roundCount = 0;
@@ -102,9 +120,6 @@ export default function SetBracket() {
         console.log("round: " + currentRound + " match: " + match.id + " rc: " + roundCount + " match.round: " + match.round)
         if (match.round == currentRound) {
           if (currentRound > 1) {
-            console.log("I: " + i + " prc: " + previousRoundCount + " rc: " + roundCount)
-            console.log("pm1: " + matches[i - previousRoundCount + roundCount].id)
-            console.log("pm2: " + matches[i - previousRoundCount + roundCount + 1].id)
             matches[i].firstPreviousMatchId = matches[i - previousRoundCount + roundCount].id
             matches[i].secondPreviousMatchId = matches[i - previousRoundCount + roundCount + 1].id
 
@@ -116,7 +131,6 @@ export default function SetBracket() {
       }
       lastRound = currentRound;
     }
-    console.log("matches: " + matches)
     for (let i = 0; i < matches.length; i++) {
       await updateMatches(db, matches)
     }

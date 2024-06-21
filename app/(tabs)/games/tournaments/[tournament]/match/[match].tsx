@@ -6,20 +6,24 @@ import {
   Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
   Match, createMatchTable, insertMatch, getMatches, updateMatches, getMatch,
   deleteMatch, deleteMatches,
-  updateMatch
+  updateMatch,
+  updateTournament
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function SettingsScreen() {
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").split("/")[0]);
-  const matchId = Number(path.replace("/games/tournaments/", "").split("/")[1]);
+  const matchId = Number(path.replace("/games/tournaments/", "").split("/")[2]);
   const [match, setMatch] = useState<Match|null>(null);
   const [firstTeam, setfFrstTeam] = useState<Team|null>(null);
   const [secondTeam, setSecondTeam] = useState<Team|null>(null);
   const [firstTeamCups, setfFrstTeamCups] = useState<string>("");
   const [secondTeamCups, setSecondTeamCups] = useState<string>("");
+  console.log("tournamanent id: "+ tournamentId)
+  console.log("match id: " + matchId)
 
 
   useEffect(() => {
@@ -33,6 +37,7 @@ export default function SettingsScreen() {
     }
 
     initTeams();
+    console.log("match: " + match)
   }, [match])
 
   useEffect(() => {
@@ -44,6 +49,42 @@ export default function SettingsScreen() {
 
     createTables();
   }, []);
+
+  async function updateProgress() {
+    const db = await initTournamentDB();
+    let tournament = await getTournament(db, tournamentId)
+    let matches = await getMatches(db, tournamentId);
+    let teams = await getTeams(db, tournamentId)
+    let totalRounds = 0;
+    if (tournament) {
+      let currentTeams = teams.length;
+      while (currentTeams > 1) {
+        currentTeams /= 2;
+        totalRounds++;
+      }
+      for (let round = 1; round <= totalRounds; round++) {
+        let roundComplete = true;
+        for (let i = 0; i < matches.length; i++) {
+          const match = matches[i];
+          if (match.round == round) {
+            if (match.winner) {
+              
+            } else {
+              roundComplete = false;
+            }
+            console.log("match complete: " + match.round)
+          } 
+        }
+        tournament.progress = String(round)
+        console.log("round complete: " + roundComplete)
+      }
+      // if (Number(tournament.progress) == totalRounds) {
+      //   router.replace("games/tournaments/" + tournamentId + "/winner")
+      // }
+      await updateTournament(db, tournament)
+      console.log("total rounds: " + totalRounds)
+    }
+  }
 
   const firstTeamWins = () => {
     console.log("first team wins")
@@ -74,8 +115,10 @@ export default function SettingsScreen() {
 
       updateFinishedMatch(updatedMatch)
       findNextMatch(updatedMatch)
+      updateProgress()
     }
-    router.push("games/tournaments/" + tournamentId);
+    router.replace("games/tournaments/" + tournamentId)
+    // router.push("games/tournaments/" + tournamentId);
   }
 
   const secondTeamWins = () => {
@@ -108,7 +151,8 @@ export default function SettingsScreen() {
       updateFinishedMatch(updatedMatch)
       findNextMatch(updatedMatch)
     }
-    router.push("games/tournaments/" + tournamentId);
+    router.replace("games/tournaments/" + tournamentId)
+    // router.push("games/tournaments/" + tournamentId);
   }
 
   const handleFirstTeamCupsChange = (text: string) => {
@@ -118,6 +162,8 @@ export default function SettingsScreen() {
   const handleSecondTeamCupsChange = (text: string) => {
     setSecondTeamCups(text);
   };
+
+  // TODO update tournament progress and go to winners page if finished
 
   return (
     <View style={styles.container}>
@@ -141,16 +187,13 @@ export default function SettingsScreen() {
         <View style={styles.boxContent}>
           <Text style={styles.title}>Set Winner</Text>
           <Text style={styles.title}>First Team: {firstTeam?.name}</Text>
-          <Text style={styles.title}>Match id: {secondTeam?.name}</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
       </View>
 
-
       <View style={styles.box}>
         <View style={styles.boxContent} onTouchEnd={secondTeamWins}>
           <Text style={styles.title}>Set Winner</Text>
-          <Text style={styles.title}>First Team: {firstTeam?.name}</Text>
           <Text style={styles.title}>Second Team: {secondTeam?.name}</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />

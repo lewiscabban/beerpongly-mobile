@@ -1,11 +1,60 @@
-import { Image, StyleSheet, View, Text } from 'react-native';
-import { Link } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Image, StyleSheet, FlatList, View, Text } from 'react-native';
+import { Link, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { useFocusEffect } from '@react-navigation/native';
+import { 
+  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
+  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
+  Match, createMatchTable, insertMatch, getMatches, updateMatches,
+  deleteMatch, deleteMatches,
+} from '@/db/tournament';
 
 export default function Winner() {
+  const [tournament, setTournament] = useState<Tournament | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const path = usePathname();
+  const [winningTeam, setfWinningTeam] = useState<String>("");
+  const [secondTeam, setSecondTeam] = useState<Team|null>(null);
+  const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
+
+  useEffect(() => {
+    async function createTables() {
+      const db = await initTournamentDB();
+      await createTournamentTable(db);
+      setTournament(await getTournament(db, tournamentId));
+      setTeams(await getTeams(db, tournamentId));
+      setMatches(await getMatches(db, tournamentId));
+    }
+
+    createTables();
+  }, []);
+
+  useEffect(() => {
+    async function createTables() {
+      const db = await initTournamentDB();
+      let teams = await getTeams(db, tournamentId)
+      let totalRounds = 0;
+      if (tournament) {
+        let currentTeams = teams.length;
+        while (currentTeams > 1) {
+          currentTeams /= 2;
+          totalRounds++;
+        }
+        for (let i = 0; i < matches.length; i++) {
+          
+        }
+        console.log("total rounds: " + totalRounds)
+      }
+    }
+
+    createTables();
+  }, [matches]);
+
   return (
     <View style={styles.container}>
+      <Text>winner: {winningTeam}</Text>
       <Link href={"games/tournaments/1"}>
         <View style={styles.box}>
           <View style={styles.boxContent}>
