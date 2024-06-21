@@ -81,6 +81,14 @@ export const getTournament = async (db: SQLite.SQLiteDatabase, tournamentId: num
     return tournament
 };
 
+export const deleteTournament = async (db: SQLite.SQLiteDatabase, tournament: Tournament): Promise<void> => {
+    const result = await db.runAsync(`
+        DELETE FROM tournament
+        WHERE id = ?`,
+        tournament.id);
+    console.log("results: " + result)
+};
+
 export const createTeamTable = async (db: SQLite.SQLiteDatabase): Promise<void> => {
     // const alter = await db.runAsync("ALTER TABLE team ADD COLUMN position INTEGER")
     const table = await db.runAsync(`
@@ -105,6 +113,17 @@ export const updateTeams = async (db: SQLite.SQLiteDatabase, teams: Team[]): Pro
     for (let i = 0; i < teams.length; i++) {
         const team = teams[i];
         const result = await db.runAsync('UPDATE team SET position = ? WHERE id = ?', team.position, team.id);
+        console.log("results: " + result)
+    }
+};
+
+export const deleteTeams = async (db: SQLite.SQLiteDatabase, teams: Team[]): Promise<void> => {
+    for (let i = 0; i < teams.length; i++) {
+        const team = teams[i];
+        const result = await db.runAsync(`
+            DELETE FROM team
+            WHERE tournamentId = ?`,
+            team.tournamentId);
         console.log("results: " + result)
     }
 };

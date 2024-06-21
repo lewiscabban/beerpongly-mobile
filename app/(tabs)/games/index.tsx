@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { Tournament, initTournamentDB, createTournamentTable, getTournaments } from '@/db/tournament';
+import { 
+  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments, getTournament, deleteTournament,
+  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam, deleteTeams,
+  Match, createMatchTable, insertMatch, getMatches, updateMatches, getMatch,
+  deleteMatch, deleteMatches,
+  updateMatch,
+  updateTournament
+} from '@/db/tournament';
 
 
 export default function TabTwoScreen() {
@@ -22,17 +29,50 @@ export default function TabTwoScreen() {
     console.log("inputs: " + inputs.length)
   }, [inputs])
 
+  const delTournament = (item: Tournament) => {
+    async function runAsync(item: Tournament) {
+        const db = await initTournamentDB()
+        await createTournamentTable(db);
+        await createTeamTable(db);
+        await createMatchTable(db);
+        let tournament = await getTournament(db, item.id);
+        let teams = await getTeams(db, item.id);
+        let matches = await getMatches(db, item.id);
+        deleteMatches(db, matches);
+        deleteTeams(db, teams);
+        if (tournament) {
+          deleteTournament(db, tournament)
+        }
+        setInputs(await getTournaments(db));
+      }
+
+    runAsync(item);
+  };
+
   const renderItem = ({ item }: { item: Tournament }) => (
-    <Link href={"games/tournaments/" + item.id}>
-      <View style={styles.box}>
-        <View style={styles.boxContent}>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.body}>{item.progress}</Text>
-          <Text style={styles.body}>{item.id}</Text>
+    <View>
+      <Link href={"games/tournaments/" + item.id}>
+        <View style={styles.box}>
+            <View style={styles.boxContent}>
+              <Text style={styles.title}>{item.name}</Text>
+              <Text style={styles.body}>{item.progress}</Text>
+              <Text style={styles.body}>{item.id}</Text>
+            </View>
+            <MaterialIcons name="arrow-forward" size={24} color="black" />
+          
+        
         </View>
-        <MaterialIcons name="arrow-forward" size={24} color="black" />
+      </Link>
+      <View>
+      <Button
+        onPress={() => delTournament(item)}
+        title="Delete"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"
+      />
       </View>
-    </Link>
+    </View>
+        
   );
 
   return (
