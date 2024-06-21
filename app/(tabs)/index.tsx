@@ -12,7 +12,7 @@ interface Box {
 }
 
 const data: Box[] = [
-  { id: '1', title: 'Tournament', body: 'Play a tournament.', navigation: 'tournament', page: 'addTournament' },
+  { id: '1', title: 'Tournament', body: 'Play a tournament.', navigation: '/games', page: 'addTournament' },
   // { id: '2', title: 'King of the Table', body: 'Consectetur adipiscing elit.', },
   // { id: '3', title: 'Box 3', body: 'Sed do eiusmod tempor incididunt.', },
   // { id: '4', title: 'Box 4', body: 'Ut labore et dolore magna aliqua.', },
@@ -21,7 +21,7 @@ const data: Box[] = [
 
 export default function HomeScreen() {
   const renderItem = ({ item }: { item: Box }) => (
-    <Link href={item.navigation + "/" + item.page}>
+    <Link href={item.navigation + "/"}>
       <View style={styles.box}>
         <View style={styles.boxContent}>
           <Text style={styles.title}>{item.title}</Text>
