@@ -9,8 +9,10 @@ import {
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
   deleteMatch, deleteMatches,
 } from '@/db/tournament';
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Winner() {
+  const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -29,7 +31,7 @@ export default function Winner() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
 
   useEffect(() => {
     async function createTables() {

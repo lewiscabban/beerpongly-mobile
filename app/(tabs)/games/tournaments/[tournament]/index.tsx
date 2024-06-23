@@ -9,9 +9,11 @@ import {
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
   deleteMatch, deleteMatches, Round
 } from '@/db/tournament';
+import { useIsFocused } from "@react-navigation/native";
 
 
 export default function SettingsScreen() {
+  const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -42,7 +44,7 @@ export default function SettingsScreen() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
   useEffect(() => {
     let totalRounds = 0
     for (let i = 0; i < matches.length; i++) {

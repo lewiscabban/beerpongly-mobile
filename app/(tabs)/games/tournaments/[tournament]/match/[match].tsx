@@ -10,10 +10,11 @@ import {
   updateTournament
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 
 
 export default function SettingsScreen() {
+  const isVisible = useIsFocused();
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").split("/")[0]);
   const matchId = Number(path.replace("/games/tournaments/", "").split("/")[2]);
@@ -48,7 +49,7 @@ export default function SettingsScreen() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
 
   async function updateProgress() {
     const db = await initTournamentDB();

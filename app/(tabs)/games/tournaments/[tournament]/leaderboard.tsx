@@ -11,6 +11,7 @@ import {
   updateTournament
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
+import { useIsFocused } from "@react-navigation/native";
 
 interface Leaderboard {
   id: number
@@ -22,6 +23,7 @@ interface Leaderboard {
 
 
 export default function SetBracket() {
+  const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -41,7 +43,7 @@ export default function SetBracket() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
 
   useEffect(() => {
     let newLeaderboard: Leaderboard[] = []

@@ -10,10 +10,12 @@ import {
   updateMatch,
   updateTournament
 } from '@/db/tournament';
+import { useIsFocused } from "@react-navigation/native";
 
 
 export default function TabTwoScreen() {
   const [inputs, setInputs] = useState<Tournament[]>([]);
+  const isVisible = useIsFocused();
 
   useEffect(() => {
     async function createTables() {
@@ -23,7 +25,7 @@ export default function TabTwoScreen() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
 
   useEffect(() => {
     console.log("inputs: " + inputs.length)

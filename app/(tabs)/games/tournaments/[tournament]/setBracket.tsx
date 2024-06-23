@@ -9,9 +9,11 @@ import {
   deleteMatch, deleteMatches,
   getTotalRounds,
 } from '@/db/tournament';
+import { useIsFocused } from "@react-navigation/native";
 
 
 export default function SetBracket() {
+  const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const path = usePathname();
@@ -26,7 +28,7 @@ export default function SetBracket() {
     }
 
     createTables();
-  }, []);
+  }, [isVisible]);
 
   // useEffect(() => {
   //   let totalRounds = getTotalRounds(teams);
