@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, FlatList, View, Text } from 'react-native';
+import { Image, StyleSheet, FlatList, View, Text, Pressable } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
@@ -10,6 +10,7 @@ import {
   getTotalRounds,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from '@/styles/defaultStyles';
 
 
 export default function SetBracket() {
@@ -165,47 +166,15 @@ export default function SetBracket() {
         keyExtractor={(item) => String(item.id)}
       />
 
-      <View style={styles.box} onTouchEnd={handleRandomise}>
-        <View style={styles.boxContent}>
-          <Text style={styles.title}>Randomise</Text>
-        </View>
+      <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
+          <Text style={styles.secondaryText}>Randomise</Text>
+        </Pressable>
+
+        <Pressable style={styles.primaryButton} onPress={createMatches}>
+          <Text style={styles.primaryText}>Save</Text>
+        </Pressable>
       </View>
-      {/* <Link href={"games/tournaments/" + tournamentId}> */}
-        <View style={styles.box} onTouchEnd={createMatches}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Play Game</Text>
-          </View>
-        </View>
-      {/* </Link> */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
-  },
-});

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, Text, TextInput } from 'react-native';
+import { Image, StyleSheet, View, Text, TextInput, Pressable } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
@@ -11,6 +11,7 @@ import {
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from '@/styles/defaultStyles';
 
 
 export default function SettingsScreen() {
@@ -163,7 +164,6 @@ export default function SettingsScreen() {
   const handleSecondTeamCupsChange = (text: string) => {
     setSecondTeamCups(text);
   };
-
   // TODO update tournament progress and go to winners page if finished
 
   return (
@@ -202,45 +202,3 @@ export default function SettingsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  inputContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    marginLeft: 8,
-    marginTop: 5,
-    width: 200,
-  },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
-  },
-});

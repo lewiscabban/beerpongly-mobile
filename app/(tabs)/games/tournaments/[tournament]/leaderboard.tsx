@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, Text, FlatList } from 'react-native';
+import { Image, Pressable, View, Text, FlatList } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -12,6 +12,7 @@ import {
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from '@/styles/defaultStyles';
 
 interface Leaderboard {
   id: number
@@ -95,6 +96,14 @@ export default function SetBracket() {
     setLeaderboards(newLeaderboard)
   }, [teams || matches]);
 
+  function onTournamentPress() {
+    router.replace("games/tournaments/" + tournamentId);
+  }
+
+  function onSetBracketPress() {
+    router.replace("games/tournaments/" + tournamentId + "/setBracket");
+  }
+
   const renderItem = ({ item }: { item: Leaderboard }) => (
     <View style={styles.box}>
       <View style={styles.boxContent}>
@@ -111,43 +120,16 @@ export default function SetBracket() {
         renderItem={renderItem}
         keyExtractor={(item) => String(item.id)}
       />
-      <Link href={"games/tournaments/" + tournamentId}>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Play Tournament</Text>
-          </View>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </View>
-      </Link>
+
+      <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
+          <Text style={styles.secondaryText}>Edit</Text>
+        </Pressable>
+
+        <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
+          <Text style={styles.primaryText}>Tournament</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
-  },
-});

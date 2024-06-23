@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, FlatList, View, Text, ScrollView } from 'react-native';
-import { Link, usePathname } from 'expo-router';
+import { Pressable, StyleSheet, FlatList, View, Text, ScrollView } from 'react-native';
+import { Link, usePathname, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { 
@@ -10,6 +10,7 @@ import {
   deleteMatch, deleteMatches, Round
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from '@/styles/defaultStyles';
 
 
 export default function SettingsScreen() {
@@ -65,6 +66,14 @@ export default function SettingsScreen() {
     setRounds(newRounds)
   }, [matches]);
 
+  function onLeaderboardPress() {
+    router.replace("games/tournaments/" + tournamentId + "/leaderboard");
+  }
+
+  function onSetBracketPress() {
+    router.replace("games/tournaments/" + tournamentId + "/setBracket");
+  }
+
   const renderItem = ({ item }: { item: Match }) => (
     <Link href={"games/tournaments/" + tournamentId + "/match/" + item.id}>
       <View style={styles.box}>
@@ -98,62 +107,15 @@ export default function SettingsScreen() {
       />
       </ScrollView>
       
+      <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
+          <Text style={styles.secondaryText}>Edit</Text>
+        </Pressable>
 
-      <Link href={"games/tournaments/" + tournamentId + "/setBracket"}>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Edit Tournament</Text>
-          </View>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </View>
-      </Link>
-
-      <Link href={"games/tournaments/" + tournamentId + "/winner"}>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Winners</Text>
-          </View>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </View>
-      </Link>
-
-      <Link href={"games/tournaments/" + tournamentId + "/leaderboard"}>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Leaderboard</Text>
-          </View>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </View>
-      </Link>
+        <Pressable style={styles.primaryButton} onPress={onLeaderboardPress}>
+          <Text style={styles.primaryText}>Leaderboard</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
-  },
-});
