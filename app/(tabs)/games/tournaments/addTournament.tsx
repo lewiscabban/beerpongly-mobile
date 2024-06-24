@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Link, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,7 @@ import {
   Team, createTeamTable, insertTeam, getTeams,
   getTotalRounds,
 } from '@/db/tournament';
+import { styles } from '@/styles/defaultStyles';
 
 interface InputTeam {
   id: number;
@@ -97,38 +98,43 @@ export default function AddTournament() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.box}>
-        <View style={styles.boxContent}>
-          <Text style={styles.title}>Set Bracket</Text>
+    <ScrollView contentContainerStyle={customStyles.container}>
+      <View style={customStyles.box}>
+        <View style={customStyles.boxContent}>
+          <Text style={customStyles.title}>Set Bracket</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
       </View>
-      <View style={styles.inputContainer}>
+      <View style={customStyles.inputContainer}>
         <Text>Enter Tournament Name:</Text>
         <TextInput
-          style={styles.input}
+          style={customStyles.input}
           value={input.name}
           onChangeText={handleNameChange}
         />
       </View>
       {input.teams.map(team => (
-        <View key={team.id} style={styles.inputContainer}>
+        <View key={team.id} style={customStyles.inputContainer}>
           <Text>Team {team.id}:</Text>
           <TextInput
-            style={styles.input}
+            style={customStyles.input}
             value={team.name}
             onChangeText={text => handleTeamChange(team.id, text)}
           />
         </View>
       ))}
       <Button title="Add Team" onPress={handleAddTeam} />
-      <Button title="Submit" onPress={handleSubmit} />
+
+      <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.singleButton} onPress={handleSubmit}>
+          <Text style={styles.primaryText}>Save</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const customStyles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',

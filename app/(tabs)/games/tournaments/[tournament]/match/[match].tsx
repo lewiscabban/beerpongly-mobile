@@ -164,6 +164,15 @@ export default function SettingsScreen() {
   const handleSecondTeamCupsChange = (text: string) => {
     setSecondTeamCups(text);
   };
+
+  function onTournamentPress() {
+    router.replace("games/tournaments/" + tournamentId);
+  }
+
+  function onLeaderboardPress() {
+    router.replace("games/tournaments/" + tournamentId + "/leaderboard");
+  }
+
   // TODO update tournament progress and go to winners page if finished
 
   return (
@@ -198,6 +207,16 @@ export default function SettingsScreen() {
           <Text style={styles.title}>Second Team: {secondTeam?.name}</Text>
         </View>
         <MaterialIcons name="arrow-forward" size={24} color="black" />
+      </View>
+
+      <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.secondaryButton} onPress={onLeaderboardPress}>
+          <Text style={styles.secondaryText}>Leaderboard</Text>
+        </Pressable>
+
+        <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
+          <Text style={styles.primaryText}>Tournament</Text>
+        </Pressable>
       </View>
     </View>
   );
