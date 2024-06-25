@@ -9,19 +9,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     position: 'relative',
   },
-  inputContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    marginLeft: 8,
-    marginTop: 5,
-    width: 200,
-  },
   box: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -40,8 +27,38 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  body: {
-    fontSize: 14,
+  inputContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  input: {
+    flex: 1,
+    marginLeft: 15,
+    marginRight: 15,
+    paddingLeft: 9,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    height: 40,
+  },
+  inputHeader: {
+    alignItems: "center",
+    paddingLeft: 25,
+    paddingBottom: 5,
+    fontWeight: 'bold',
+    color: '#211071',
+  },
+  deleteButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    padding: 10,
+  },
+  teamContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   singleButton: {
     flex: 1,
@@ -104,5 +121,66 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     backgroundColor: '#F8FAFC',
   },
+  gamesContainer: {
+    height: '100%'
+  },
+  inputView: {
+    height: 40,
+    width: '100%',
+  },
+  addTeamsView: {
+    left: 0,
+    right: 0,
+    height: 55,
+    width: '100%',
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  gamesView: {
+    left: 0,
+    right: 0,
+    height: 80,
+    width: '100%',
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  gamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    height: 50,
+  },
+  gamesButtonText: {
+    textAlignVertical: 'center',
+    fontSize: 16,
+    lineHeight: 21,
+    marginLeft: 15,
+    marginRight: 15,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  addGamesView: {
+    left: 0,
+    right: 0,
+    height: 80,
+    width: '100%',
+    paddingBottom: 15,
+  },
+  addGamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    height: 50,
+  },
+  gamesIcon: {
+    marginLeft: 15,
+  },
 });
-  

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, Pressable, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { 
   Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments, getTournament, deleteTournament,
   Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam, deleteTeams,
@@ -11,11 +11,13 @@ import {
   updateTournament
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
+import { styles } from '@/styles/defaultStyles';
 
 
 export default function TabTwoScreen() {
   const [inputs, setInputs] = useState<Tournament[]>([]);
   const isVisible = useIsFocused();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     async function createTables() {
@@ -51,58 +53,138 @@ export default function TabTwoScreen() {
     runAsync(item);
   };
 
-  const renderItem = ({ item }: { item: Tournament }) => (
+  const deleteGameAlert = (item: Tournament) => {
+    async function runAsync(item: Tournament) {
+        console.log("test!")
+        Alert.alert('Deleting ' + item.name, 'Are you sure you want to delete this game?', [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: () => delTournament(item)},
+        ]);
+      }
+
+    runAsync(item);
+  };
+
+  const test = (item: Tournament) => {
+    setModalVisible(true)
+  };
+
+  function onAddGame() {
+    router.push("games/tournaments/addTournament")
+  }
+
+  function onGamesPress(item: Tournament) {
+    router.push("games/tournaments/" + item.id)
+  }
+  
+  function getProgress(item: Tournament): string {
+    if (item.progress != "") {
+      console.log(item)
+      return "In Progress"
+    } 
+    return "New"
+  }
+  const renderProgress = ({ item }: { item: Tournament }) => (
     <View>
-      <Link href={"games/tournaments/" + item.id}>
-        <View style={styles.box}>
-            <View style={styles.boxContent}>
-              <Text style={styles.title}>{item.name}</Text>
-              <Text style={styles.body}>{item.progress}</Text>
-              <Text style={styles.body}>{item.id}</Text>
-            </View>
-            <MaterialIcons name="arrow-forward" size={24} color="black" />
-          
-        
+      {}
+      <Text >{getProgress(item)}</Text>
+    </View>
+  )
+
+  const renderItem = ({ item }: { item: Tournament }) => (
+    <View style={styles.gamesView}>
+      <Pressable style={styles.gamesButton} onPress={() => onGamesPress(item)}>
+        <View style={{width: '60%'}}>
+          <Text style={styles.gamesButtonText} >{item.name}</Text>
         </View>
-      </Link>
-      <View>
-      <Button
-        onPress={() => delTournament(item)}
-        title="Delete"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
-      </View>
+        <View style={{width: '30%'}}>
+          <View style={{}}>
+            <Text >Tournament</Text>
+            {/* {renderProgress({item})} */}
+          </View>
+        </View>
+        <Pressable onPress={() => deleteGameAlert(item)}>
+          <MaterialIcons name="delete-outline" size={24} color="#211071"  />
+        </Pressable>
+      </Pressable>
     </View>
         
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.gamesContainer}>
       <FlatList
+        style={{flexGrow: 0, marginBottom: 0, paddingBottom: 0}}
         data={inputs}
         renderItem={renderItem}
         keyExtractor={(item, index) => String(index)}
       />
-      <Link href={"games/tournaments/addTournament"}>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            <Text style={styles.title}>Add Tournament</Text>
-          </View>
-          <MaterialIcons name="arrow-forward" size={24} color="black" />
-        </View>
-      </Link>
+
+      <View style={styles.addGamesView}>
+        <Pressable style={styles.addGamesButton} onPress={onAddGame}>
+          <MaterialIcons style={styles.gamesIcon} name="add" size={24} color="#211071" />
+          <Text style={styles.gamesButtonText} >Add Tournament</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
+const modalStyles = StyleSheet.create({
+  centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});
+
+const gamesStyles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#F8FAFC',
   },
   box: {
     flexDirection: 'row',
