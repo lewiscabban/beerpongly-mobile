@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, Pressable, Modal } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, Pressable, Modal, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import { 
@@ -16,8 +16,8 @@ import { styles } from '@/styles/defaultStyles';
 
 export default function TabTwoScreen() {
   const [inputs, setInputs] = useState<Tournament[]>([]);
+  const [modalTournament, setModalTournament] = useState<Tournament|null>(null);
   const isVisible = useIsFocused();
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     async function createTables() {
@@ -53,24 +53,18 @@ export default function TabTwoScreen() {
     runAsync(item);
   };
 
-  const deleteGameAlert = (item: Tournament) => {
-    async function runAsync(item: Tournament) {
-        console.log("test!")
-        Alert.alert('Deleting ' + item.name, 'Are you sure you want to delete this game?', [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {text: 'OK', onPress: () => delTournament(item)},
-        ]);
-      }
-
-    runAsync(item);
+  const deleteGameModal = (item: Tournament | null) => {
+    if (item) {
+      delTournament(item);
+    }
+    setModalTournament(null);
   };
 
-  const test = (item: Tournament) => {
-    setModalVisible(true)
+  const editGameModal = (item: Tournament | null) => {
+    if (item) {
+      router.push("games/tournaments/" + item.id + "/setBracket")
+    }
+    setModalTournament(null);
   };
 
   function onAddGame() {
@@ -88,6 +82,7 @@ export default function TabTwoScreen() {
     } 
     return "New"
   }
+
   const renderProgress = ({ item }: { item: Tournament }) => (
     <View>
       {}
@@ -104,11 +99,13 @@ export default function TabTwoScreen() {
         <View style={{width: '30%'}}>
           <View style={{}}>
             <Text >Tournament</Text>
+            {/* commented out until i can be bothered implementing the progress view */}
             {/* {renderProgress({item})} */}
           </View>
         </View>
-        <Pressable onPress={() => deleteGameAlert(item)}>
-          <MaterialIcons name="delete-outline" size={24} color="#211071"  />
+        <Pressable
+          onPress={() => setModalTournament(item)}>
+          <MaterialIcons name="more-vert" size={24} color="#211071"  />
         </Pressable>
       </Pressable>
     </View>
@@ -130,6 +127,46 @@ export default function TabTwoScreen() {
           <Text style={styles.gamesButtonText} >Add Tournament</Text>
         </Pressable>
       </View>
+      <Modal
+        transparent={true}
+        visible={modalTournament != null}
+        onRequestClose={() => {setModalTournament(null);}}
+      >
+        <TouchableOpacity
+          style={modalStyles.modalContainer}
+          onPress={() => setModalTournament(null)}
+        >
+          <TouchableOpacity style={modalStyles.modal} activeOpacity={1} >      
+            <View style={modalStyles.centeredView}>
+              <View style={modalStyles.modalView}>
+                <View style={modalStyles.modalTitleView}> 
+                  <Pressable
+                    style={{}}
+                    onPress={() => setModalTournament(null)}>
+                    <MaterialIcons name="close" size={24} color="#211071"  />
+                  </Pressable>
+                </View>
+                <View style={modalStyles.modalContentView}>
+                  <Text style={modalStyles.modalTextHeader}>{modalTournament?.name}</Text>
+                  
+                  <Text style={modalStyles.modalText}>Edit Tournament</Text>
+                  <Pressable
+                    style={[modalStyles.button, modalStyles.buttonCancel]}
+                    onPress={() => editGameModal(modalTournament)}>
+                    <Text style={modalStyles.textStyle}>Edit</Text>
+                  </Pressable>
+                  <Text style={modalStyles.modalText}>Deleting Tournament</Text>
+                  <Pressable
+                    style={[modalStyles.button, modalStyles.buttonClose]}
+                    onPress={() => deleteGameModal(modalTournament)}>
+                    <Text style={modalStyles.textStyle}>Delete</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
     </View>
   );
 }
@@ -141,11 +178,25 @@ const modalStyles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal: {
+    width: '90%',
+    height: 200
+  },
+  modalTitleView: {
+    width: '100%',
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+  },
   modalView: {
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 15,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -156,16 +207,33 @@ const modalStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalContentView: {
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 15,
+  },
   button: {
-    borderRadius: 20,
+    borderRadius: 8,
     padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    height: 40,
+    width: 120,
+    marginLeft: 10,
+    marginRight: 10,
     elevation: 2,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
   },
-  buttonClose: {
+  buttonEdit: {
+    backgroundColor: '#211071',
+  },
+  buttonCancel: {
     backgroundColor: '#2196F3',
+  },
+  buttonClose: {
+    backgroundColor: 'red',
   },
   textStyle: {
     color: 'white',
@@ -173,38 +241,15 @@ const modalStyles = StyleSheet.create({
     textAlign: 'center',
   },
   modalText: {
-    marginBottom: 15,
+    marginBottom: 5,
+    marginTop: 5,
     textAlign: 'center',
   },
-});
-
-const gamesStyles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#F8FAFC',
-  },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
+  modalTextHeader: {
+    alignSelf: 'flex-start',
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
+    textAlign: 'center',
+    width: 150,
   },
 });
