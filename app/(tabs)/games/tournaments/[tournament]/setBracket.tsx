@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, FlatList, View, Text, Pressable } from 'react-native';
+import { Image, StyleSheet, FlatList, View, Text, Pressable, ScrollView } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
@@ -12,11 +12,18 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from '@/styles/defaultStyles';
 
+interface Matchup {
+  id: number
+  firstTeam: Team
+  secondTeam: Team
+}
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [matchups, setMatchups] = useState<Matchup[]>([]);
+  const [nextMatchups, setNextMatchups] = useState<Matchup[]>([]);
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
 
@@ -31,21 +38,31 @@ export default function SetBracket() {
     createTables();
   }, [isVisible]);
 
-  // useEffect(() => {
-  //   let totalRounds = getTotalRounds(teams);
-  //   let newTeams = [...teams]
-  //   const numberOfFirstRoundTeams = Math.pow(2, totalRounds)
-  //   console.log("requited first round teams: " + numberOfFirstRoundTeams)
+  useEffect(() => {
+    let newMatchups: Matchup[] = [];
+    let count = 0;
+    for (let i = 0; i < teams.length-1; i+=2) {
+      if (i+1 < teams.length) {
+        const firstTeam = teams[i];
+        const secondTeam = teams[i+1];
+        newMatchups.push({
+          id: count,
+          firstTeam: firstTeam,
+          secondTeam: secondTeam,
+        });
+        count++;
+      }
+    }
+    setMatchups(newMatchups);
+  }, [teams]);
 
-  //   while (teams.length < numberOfFirstRoundTeams) {
-  //     newTeams.push({
-  //       id: number;
-  //       name: string;
-  //       position: number;
-  //       tournamentId: number;
-  //     })
-  //   }
-  // }, [teams]);
+  useEffect(() => {
+    let newNextMatchups: Matchup[] = []
+    for (let i = 0; i < matchups.length/2; i++) {
+      newNextMatchups.push(matchups[i]);
+    }
+    setNextMatchups(newNextMatchups);
+  }, [matchups]);
 
   function shuffle(array: Team[]) {
     let currentIndex = array.length;
@@ -66,16 +83,6 @@ export default function SetBracket() {
       array[i].position = i+1;
     }
   }
-
-
-  const renderItem = ({ item }: { item: Team }) => (
-    <View style={styles.box}>
-      <View style={styles.boxContent}>
-        <Text style={styles.title}>position: {item.position} Name: {item.name}</Text>
-      </View>
-      <MaterialIcons name="arrow-forward" size={24} color="black" />
-    </View>
-  );
 
   const createMatches = async () => {
     let totalRounds = getTotalRounds(teams);
@@ -158,13 +165,75 @@ export default function SetBracket() {
     updateTeamPositions()
   }
 
+  const renderItem = ({ item }: { item: Team }) => (
+    <View style={styles.box}>
+      <View style={styles.boxContent}>
+        <Text style={styles.title}>position: {item.position} Name: {item.name}</Text>
+      </View>
+      <MaterialIcons name="arrow-forward" size={24} color="black" />
+    </View>
+  );
+
+  const renderMatchups = ({ item }: { item: Matchup }) => (
+    <View style={styles.matchBox}>
+      <View style={styles.matchBoxContent}>
+        <Text style={styles.matchTitle}>{item.firstTeam.name}</Text>
+      </View>
+      <View style={styles.matchBr}></View>
+      <View style={styles.matchBoxContent}>
+        <Text style={styles.matchTitle}>{item.secondTeam.name}</Text>
+      </View>
+      {/* <MaterialIcons name="arrow-forward" size={24} color="black" /> */}
+    </View>
+  );
+
+  const renderMatchupLinks = ({ item }: { item: Matchup }) => (
+    <View style={styles.matchLinkBox}>
+      <View style={styles.matchLinkBoxContent1}>
+      </View>
+      <View style={styles.matchLinkBoxContent2}>
+        <View style={[styles.matchBr, {paddingTop: 60}]}></View>
+      </View>
+    </View>
+  );
+
+  const renderNextMatchups = ({ item }: { item: Matchup }) => (
+    <View style={[styles.matchNextBox]}>
+      <View style={styles.matchBoxContent}>
+      </View>
+      <View style={styles.matchBr}></View>
+      <View style={styles.matchBoxContent}>
+      </View>
+    </View>
+  );
+
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={teams}
-        renderItem={renderItem}
-        keyExtractor={(item) => String(item.id)}
-      />
+    <View style={styles.matchContainer}>
+      <ScrollView style={{height: '89%'}}>
+        <View style={styles.matchScroll}>
+          <FlatList
+            scrollEnabled={false}
+            style={{height: '100%', width: '60%'}}
+            data={matchups}
+            renderItem={renderMatchups}
+            keyExtractor={(item) => String(item.id)}
+          />
+          <FlatList
+            scrollEnabled={false}
+            style={{height: '100%', width: '20%'}}
+            data={nextMatchups}
+            renderItem={renderMatchupLinks}
+            keyExtractor={(item) => String(item.id)}
+          />
+          <FlatList
+            scrollEnabled={false}
+            style={{height: '100%', width: '20%'}}
+            data={nextMatchups}
+            renderItem={renderNextMatchups}
+            keyExtractor={(item) => String(item.id)}
+          />
+        </View>
+      </ScrollView>
 
       <View style={styles.buttonStyleContainer}>
         <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
