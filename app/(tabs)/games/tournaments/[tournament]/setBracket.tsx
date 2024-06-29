@@ -177,10 +177,17 @@ export default function SetBracket() {
   const renderMatchups = ({ item }: { item: Matchup }) => (
     <View style={styles.matchBox}>
       <View style={styles.matchBoxContent}>
+        {item.firstTeam.name == "" && 
+          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+        }
         <Text style={styles.matchTitle}>{item.firstTeam.name}</Text>
       </View>
       <View style={styles.matchBr}></View>
       <View style={styles.matchBoxContent}>
+
+        {item.secondTeam.name == "" && 
+          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+        }
         <Text style={styles.matchTitle}>{item.secondTeam.name}</Text>
       </View>
       {/* <MaterialIcons name="arrow-forward" size={24} color="black" /> */}
