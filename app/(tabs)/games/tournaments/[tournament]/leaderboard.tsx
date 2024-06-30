@@ -1,4 +1,4 @@
-import { Image, Pressable, View, Text, FlatList } from 'react-native';
+import { Image, Pressable, View, Text, FlatList, ScrollView } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -20,6 +20,7 @@ interface Leaderboard {
   cups: number
   wins: number
   losses: number
+  header: boolean
 }
 
 
@@ -47,11 +48,11 @@ export default function SetBracket() {
   }, [isVisible]);
 
   useEffect(() => {
-    let newLeaderboard: Leaderboard[] = []
+    let newLeaderboard: Leaderboard[] = [{id: 0, name: "this is the title team", cups: 0, wins: 0, losses: 0, header: true}]
     for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
       if (team.name != "") {
-        let currentLeaderboard: Leaderboard = {id: i, name: team.name, cups: 0, wins: 0, losses: 0}
+        let currentLeaderboard: Leaderboard = {id: i+1, name: team.name, cups: 0, wins: 0, losses: 0, header: false}
         for (let j = 0; j < matches.length; j++) {
           const match = matches[j];
           if (match.firstTeam == team.id) {
@@ -61,7 +62,10 @@ export default function SetBracket() {
             currentLeaderboard.cups += match.secondTeamCups
           }
           if (match.firstTeam == team.id || match.secondTeam == team.id) {
-            if (match.winner == team.id) {
+            if (!match.winner) {
+              //match has not been played yet
+            }
+            else if (match.winner == team.id) {
               currentLeaderboard.wins += 1
             } else {
               currentLeaderboard.losses += 1
@@ -105,21 +109,53 @@ export default function SetBracket() {
   }
 
   const renderItem = ({ item }: { item: Leaderboard }) => (
-    <View style={styles.box}>
-      <View style={styles.boxContent}>
-        <Text style={styles.title}>Name: {item.name} Cups: {item.cups}</Text>
-        <Text style={styles.title}>Wins: {item.wins} Losses: {item.losses}</Text>
-      </View>
+    <View>
+      
+      {item.id == 0 && 
+        <View style={[styles.leaderboardBox, {borderTopWidth: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8, backgroundColor: '#E5EDFF'}]}>
+          <View style={styles.boxContent}>
+            <Text style={styles.leaderboardTitle}>Team</Text>
+            <Text style={styles.leaderboardTitle}>Wins</Text>
+            <Text style={styles.leaderboardTitle}>Losses</Text>
+            <Text style={styles.leaderboardTitle}>Cups</Text>
+          </View>
+        </View>
+      }
+      {item.id != 0 && item.id != leaderboard.length-1 &&
+        <View style={styles.leaderboardBox}>
+          <View style={styles.boxContent}>
+            <Text style={styles.leaderboardTitle}>{item.name}</Text>
+            <Text style={styles.leaderboardTitle}>{item.wins}</Text>
+            <Text style={styles.leaderboardTitle}>{item.losses}</Text>
+            <Text style={styles.leaderboardTitle}>{item.cups}</Text>
+          </View>
+        </View>
+      }
+      {item.id == leaderboard.length-1 && 
+        <View style={[styles.leaderboardBox, {borderBottomLeftRadius: 8, borderBottomRightRadius: 8,}]}>
+          <View style={styles.boxContent}>
+            <Text style={styles.leaderboardTitle}>{item.name}</Text>
+            <Text style={styles.leaderboardTitle}>{item.wins}</Text>
+            <Text style={styles.leaderboardTitle}>{item.losses}</Text>
+            <Text style={styles.leaderboardTitle}>{item.cups}</Text>
+          </View>
+        </View>
+      }
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={leaderboard}
-        renderItem={renderItem}
-        keyExtractor={(item) => String(item.id)}
-      />
+    <View style={styles.leaderboardContainer}>
+      <ScrollView style={{height: '89%'}}>
+        <View style={styles.matchScroll}>
+          <FlatList
+            scrollEnabled={false}
+            data={leaderboard}
+            renderItem={renderItem}
+            keyExtractor={(item) => String(item.id)}
+          />
+        </View>
+      </ScrollView>
 
       <View style={styles.buttonStyleContainer}>
         <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>

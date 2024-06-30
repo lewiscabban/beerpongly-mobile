@@ -145,7 +145,6 @@ export default function SetBracket() {
       await updateMatches(db, matches)
     }
 
-
     matches = await getMatches(db, tournamentId);
     for (let i = 0; i < matches.length; i++) {
       console.log("t1: " + matches[i].firstTeam + " t2: " + matches[i].secondTeam + " match round: " + matches[i].round + " i: " + i + " id: " + matches[i].id + " nextmatch: " + matches[i].nextMatch + " 1: " + matches[i].firstPreviousMatchId + " 2: " + matches[i].secondPreviousMatchId)
