@@ -20,20 +20,40 @@ export default function SettingsScreen() {
   const tournamentId = Number(path.replace("/games/tournaments/", "").split("/")[0]);
   const matchId = Number(path.replace("/games/tournaments/", "").split("/")[2]);
   const [match, setMatch] = useState<Match|null>(null);
-  const [firstTeam, setfFrstTeam] = useState<Team|null>(null);
+  const [winner, setWinner] = useState<Team|null>(null);
+  const [firstTeam, setFirstTeam] = useState<Team|null>(null);
   const [secondTeam, setSecondTeam] = useState<Team|null>(null);
-  const [firstTeamCups, setfFrstTeamCups] = useState<string>("");
+  const [firstTeamCups, setFrstTeamCups] = useState<string>("");
   const [secondTeamCups, setSecondTeamCups] = useState<string>("");
   console.log("tournamanent id: "+ tournamentId)
   console.log("match id: " + matchId)
 
+  useEffect(() => {
+    if (match?.winner) {
+      if (firstTeam?.id == match.winner) {
+        setWinner(firstTeam)
+      }
+      if (secondTeam?.id == match.winner) {
+        setWinner(secondTeam)
+      }
+    }
+  }, [firstTeam || secondTeam])
+
+  useEffect(() => {
+    if (match?.firstTeamCups) {
+      setFrstTeamCups(String(match.firstTeamCups))
+    }
+    if (match?.secondTeamCups) {
+      setSecondTeamCups(String(match.secondTeamCups))
+    }
+  }, [match])
 
   useEffect(() => {
     async function initTeams() {
       const db = await initTournamentDB();
       await createTeamTable(db);
       if (match) {
-        setfFrstTeam(await getTeam(db, match.firstTeam));
+        setFirstTeam(await getTeam(db, match.firstTeam));
         setSecondTeam(await getTeam(db, match.secondTeam));
       }
     }
@@ -157,8 +177,17 @@ export default function SettingsScreen() {
     // router.push("games/tournaments/" + tournamentId);
   }
 
+  const handleSubmit = () => {
+    if (winner === firstTeam) {
+      firstTeamWins()
+    }
+    else if (winner === secondTeam) {
+      secondTeamWins()
+    }
+  };
+
   const handleFirstTeamCupsChange = (text: string) => {
-    setfFrstTeamCups(text);
+    setFrstTeamCups(text);
   };
 
   const handleSecondTeamCupsChange = (text: string) => {
@@ -172,8 +201,6 @@ export default function SettingsScreen() {
   function onLeaderboardPress() {
     router.replace("games/tournaments/" + tournamentId + "/leaderboard");
   }
-
-  // TODO update tournament progress and go to winners page if finished
 
   return (
     <View style={styles.gamesContainer}>
@@ -200,18 +227,41 @@ export default function SettingsScreen() {
             />
           </View>
         </View>
+        <View style={styles.gamesView}>
           <Text style={[styles.inputHeader, {paddingTop: 20}]}>Select Winner:</Text>
-        <View style={styles.matchupView}>
-          <View style={styles.matchupButtonView} onTouchEnd={firstTeamWins}>
-            <View style={styles.matchButton}>
-              <Text style={styles.secondaryText}>{firstTeam?.name}</Text>
+          <View style={styles.matchupView}>
+            <View style={styles.matchupButtonView} onTouchEnd={() => {setWinner(firstTeam)}}>
+              {winner === firstTeam && 
+                <View style={[styles.matchButton, {backgroundColor: '#E5EDFF'}]}>
+                  <Text style={styles.secondaryText}>{firstTeam?.name}</Text>
+                </View>
+              }
+              {winner != firstTeam && 
+                <View style={[styles.matchButton]}>
+                  <Text style={styles.secondaryText}>{firstTeam?.name}</Text>
+                </View>
+              }
+            </View>
+            <View style={{width: '2%'}}></View>
+            <View style={styles.matchupButtonView} onTouchEnd={() => {setWinner(secondTeam)}}>
+              {winner === secondTeam && 
+                <View style={[styles.matchButton, {backgroundColor: '#E5EDFF'}]}>
+                  <Text style={styles.secondaryText}>{secondTeam?.name}</Text>
+                </View>
+              }
+              {winner != secondTeam && 
+                <View style={[styles.matchButton]}>
+                  <Text style={styles.secondaryText}>{secondTeam?.name}</Text>
+                </View>
+              }
             </View>
           </View>
-
-          <View style={styles.matchupButtonView}>
-            <View style={styles.matchButton} onTouchEnd={secondTeamWins}>
-              <Text style={styles.secondaryText}>{secondTeam?.name}</Text>
-            </View>
+        </View>
+        <View style={[styles.gamesView, {marginTop: 20}]}>
+          <View style={styles.matchupView}>
+            <Pressable style={styles.matchSingleButton} onPress={handleSubmit}>
+              <Text style={styles.primaryText}>Set Winner</Text>
+            </Pressable>
           </View>
         </View>
       </View>

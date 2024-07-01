@@ -170,10 +170,15 @@ export const styles = StyleSheet.create({
     height: 50,
   },
   leaderboardContainer: {
-    // flex: 1,
-    // position: 'relative',
+    flex: 1,
     padding: 10,
-    height: '100%',
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   leaderboardBox: {
     flex: 1,
@@ -238,6 +243,16 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
+  matchSingleButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: '#211071',
+    height: 50,
+  },
   singleButton: {
     flex: 1,
     alignItems: 'center',
@@ -299,6 +314,17 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     backgroundColor: '#F8FAFC',
   },
+  matchButtonStyleContainer: {
+    // flex: 1,
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
+    // flexDirection: 'row',
+    // paddingHorizontal: 20,
+    // paddingBottom: 15,
+    // paddingTop: 15,
+    backgroundColor: '#F8FAFC',
+  },
   gamesContainer: {
     height: '100%'
   },
@@ -308,7 +334,7 @@ export const styles = StyleSheet.create({
   },
   matchupButtonView: {
     height: 40,
-    width: '50%',
+    width: '49%',
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
