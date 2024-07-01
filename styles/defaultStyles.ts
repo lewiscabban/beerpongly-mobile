@@ -106,6 +106,17 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  matchInputContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    // width: '100%',
+  },
+  matchupView: {
+    flex: 1,
+    flexDirection: 'row',
+    margin: 10,
+  },
   matchLinkBoxContent1: {
     flex: 1,
     flexDirection: 'row',
@@ -140,6 +151,23 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignItems: 'center',
     marginBottom: 5,
+  },
+  matchButtonTitle: {
+    paddingHorizontal: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    alignItems: 'center',
+    verticalAlign: 'middle',
+    marginBottom: 5,
+  },
+  matchButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: 'white',
+    height: 50,
   },
   leaderboardContainer: {
     // flex: 1,
@@ -277,6 +305,13 @@ export const styles = StyleSheet.create({
   inputView: {
     height: 40,
     width: '100%',
+  },
+  matchupButtonView: {
+    height: 40,
+    width: '50%',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
   },
   addTeamsView: {
     left: 0,

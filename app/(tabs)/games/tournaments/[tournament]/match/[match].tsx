@@ -176,39 +176,45 @@ export default function SettingsScreen() {
   // TODO update tournament progress and go to winners page if finished
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Text>First Team Cups:</Text>
-        <TextInput
-          style={styles.input}
-          value={firstTeamCups}
-          onChangeText={handleFirstTeamCupsChange}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text>Second Team Cups:</Text>
-        <TextInput
-          style={styles.input}
-          value={secondTeamCups}
-          onChangeText={handleSecondTeamCupsChange}
-        />
-      </View>
-      <View style={styles.box} onTouchEnd={firstTeamWins}>
-        <View style={styles.boxContent}>
-          <Text style={styles.title}>Set Winner</Text>
-          <Text style={styles.title}>First Team: {firstTeam?.name}</Text>
+    <View style={styles.gamesContainer}>
+      <View style={{ maxHeight: '80%' }}>
+        <View style={styles.gamesView}>
+          <Text style={styles.inputHeader}>{firstTeam?.name} Cups:</Text>
+          <View style={styles.inputView}>
+            <TextInput
+              placeholder='Enter Cups Shot'
+              style={styles.input}
+              value={firstTeamCups}
+              onChangeText={handleFirstTeamCupsChange}
+            />
+          </View>
         </View>
-        <MaterialIcons name="arrow-forward" size={24} color="black" />
-      </View>
-
-      <View style={styles.box}>
-        <View style={styles.boxContent} onTouchEnd={secondTeamWins}>
-          <Text style={styles.title}>Set Winner</Text>
-          <Text style={styles.title}>Second Team: {secondTeam?.name}</Text>
+        <View style={styles.gamesView}>
+          <Text style={styles.inputHeader}>{secondTeam?.name} Cups:</Text>
+          <View style={styles.inputView}>
+            <TextInput
+              placeholder='Enter Cups Shot'
+              style={styles.input}
+              value={secondTeamCups}
+              onChangeText={handleSecondTeamCupsChange}
+            />
+          </View>
         </View>
-        <MaterialIcons name="arrow-forward" size={24} color="black" />
-      </View>
+          <Text style={[styles.inputHeader, {paddingTop: 20}]}>Select Winner:</Text>
+        <View style={styles.matchupView}>
+          <View style={styles.matchupButtonView} onTouchEnd={firstTeamWins}>
+            <View style={styles.matchButton}>
+              <Text style={styles.secondaryText}>{firstTeam?.name}</Text>
+            </View>
+          </View>
 
+          <View style={styles.matchupButtonView}>
+            <View style={styles.matchButton} onTouchEnd={secondTeamWins}>
+              <Text style={styles.secondaryText}>{secondTeam?.name}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
       <View style={styles.buttonStyleContainer}>
         <Pressable style={styles.secondaryButton} onPress={onLeaderboardPress}>
           <Text style={styles.secondaryText}>Leaderboard</Text>
