@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, FlatList, View, Text, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions } from 'react-native';
 import { Link, usePathname, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -75,24 +75,83 @@ export default function SettingsScreen() {
     router.replace("games/tournaments/" + tournamentId + "/setBracket");
   }
 
-  const renderItem = ({ item }: { item: Match }) => (
-    <View style={[styles.box, item.round != 1 && {marginVertical: ((item.round-1)*(item.round)*60)-((item.round-2)*120)-50}]}>
-      <View style={styles.matchBoxContent}>
-        {/* {getTeamName(item.firstTeam) == "" && 
-          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
-        } */}
-        <Text style={styles.matchTitle}>{getTeamName(item.firstTeam)}</Text>
-      </View>
-      <View style={styles.matchBr}></View>
-      <View style={styles.matchBoxContent}>
+  function onPlayMatch(item: Match) {
+    router.replace("games/tournaments/" + tournamentId + "/match/" + item.id);
+  }
 
-        {/* {getTeamName(item.secondTeam) == "" && 
-          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
-        } */}
-        <Text style={styles.matchTitle}>{getTeamName(item.secondTeam)}</Text>
+  const renderItem = ({ item }: { item: Match }) => (
+    <Pressable style={{flex: 1, flexDirection: 'row', width: '100%'}} onPress={() => onPlayMatch(item)}>
+      <View style={[styles.box, item.round != 1 && {marginVertical: ((item.round-1)*(item.round)*60)-((item.round-2)*120)-50}]} >
+        <View style={[styles.matchBoxContent, item.firstTeam != null && item.firstTeam === item.winner && {backgroundColor: '#E5EDFF', borderTopRightRadius: 8, borderTopLeftRadius: 8}]}>
+          {
+            getTeamName(item.firstTeam) == "" && item.round === 1
+            ? 
+            <Text style={[styles.matchTitleLeft, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+            :
+            <View style={{flex: 1, flexDirection: 'row', width: '100%'}}>
+              <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-start'}}>
+                <Text style={styles.matchTitle}>{getTeamName(item.firstTeam)}</Text>
+              </View>
+              {
+                item.winner === null ?
+                <></> :
+                <View>
+                  {/* {
+                    getTeamName(item.secondTeam) === "" && item.round === 1 ?
+                    <></> :
+                    <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
+                      <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
+                    </View>
+                  } */}
+                  {
+                    item.firstTeam != null && item.firstTeam === item.winner ?
+                    <MaterialIcons style={styles.matchTitleLeft} name="check" size={22} color="black" /> :
+                    <MaterialIcons style={styles.matchTitleLeft} name="close" size={22} color="black" />
+                  }
+                </View>
+              }
+            </View>
+          }
+        </View>
+        <View style={styles.matchBr}></View>
+        <View style={[styles.matchBoxContent, item.secondTeam != null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}]}>
+          {
+            getTeamName(item.secondTeam) === "" && item.round === 1
+            ? 
+            <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797', textAlignVertical: 'center'}]}>BYE</Text>
+            :
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <View style={{flex: 1, flexDirection: 'column', alignItems: 'flex-start'}}>
+                <Text style={styles.matchTitle}>{getTeamName(item.secondTeam)}</Text>
+              </View>
+              {
+                item.winner === null ?
+                <></> :
+                <View>
+                {/* {
+                  getTeamName(item.secondTeam) === "" && item.round === 1 ?
+                  <></> :
+                  <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
+                    <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
+                  </View>
+                } */}
+                  {
+                    item.secondTeam != null && item.secondTeam === item.winner ?
+                    <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
+                      <MaterialIcons style={styles.matchTitleLeft} name="check" size={22} color="black" />
+                    </View>
+                    :
+                    <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
+                      <MaterialIcons style={styles.matchTitleLeft} name="close" size={22} color="black" />
+                    </View>
+                  }
+                </View>
+              }
+            </View>
+          }
+        </View>
       </View>
-      {/* <MaterialIcons name="arrow-forward" size={24} color="black" /> */}
-    </View>
+    </Pressable>
   );
 
   const renderMatchupLinks = ({ item }: { item: Match }) => (
@@ -110,7 +169,7 @@ export default function SettingsScreen() {
       {item.id != 1 &&
         <FlatList
           data={item.matches}
-          style={{width: 80, }}
+          style={{width: Dimensions.get('window').width*0.2, }}
           renderItem={renderMatchupLinks}
           keyExtractor={(item) => String(item.id)}
           scrollEnabled={false}
@@ -118,7 +177,7 @@ export default function SettingsScreen() {
       }
       <FlatList
         data={item.matches}
-        style={{width: 200}}
+        style={{width: Dimensions.get('window').width*0.6}}
         renderItem={renderItem}
         keyExtractor={(item) => String(item.id)}
         scrollEnabled={false}

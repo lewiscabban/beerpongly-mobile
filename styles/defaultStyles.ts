@@ -15,11 +15,11 @@ export const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    // flexDirection: 'column',
+    // justifyContent: 'space-between',
+    // alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    verticalAlign: 'middle',
+    // verticalAlign: 'middle',
     width: '100%',
     height: 100,
     marginVertical: 10,
@@ -120,7 +120,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    // width: '100%',
   },
   matchupView: {
     flex: 1,
@@ -159,7 +158,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 18,
     fontWeight: 'bold',
-    alignItems: 'center',
+  },
+  matchTitleLeft: {
+    paddingHorizontal: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 5,
   },
   matchButtonTitle: {
