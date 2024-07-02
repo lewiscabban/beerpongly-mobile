@@ -4,10 +4,14 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 10,
     backgroundColor: '#F8FAFC',
     position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   box: {
     flex: 1,

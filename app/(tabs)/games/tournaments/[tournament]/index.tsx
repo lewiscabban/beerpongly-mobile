@@ -128,7 +128,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView style={{height: '89%'}}>
         <FlatList
         data={rounds}
         horizontal
