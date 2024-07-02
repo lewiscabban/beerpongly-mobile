@@ -33,6 +33,12 @@ export interface Round {
     matches: Match[]
 }
 
+export interface Matchup {
+  id: number
+  firstTeam: Team
+  secondTeam: Team
+}
+
 export const getTotalRounds = (teams: Team[]): number => {
     let currentTeams = teams.length;
     let totalRounds = 0;

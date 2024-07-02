@@ -7,7 +7,8 @@ import {
   Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
   Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
-  deleteMatch, deleteMatches, Round
+  deleteMatch, deleteMatches, Round,
+  Matchup
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from '@/styles/defaultStyles';
@@ -61,7 +62,7 @@ export default function SettingsScreen() {
         }
       }
       newRounds.push({"id": i, "matches": round})
-      console.log(round.length)
+      console.log(round)
     }
     setRounds(newRounds)
   }, [matches]);
@@ -75,25 +76,54 @@ export default function SettingsScreen() {
   }
 
   const renderItem = ({ item }: { item: Match }) => (
-    <Link href={"games/tournaments/" + tournamentId + "/match/" + item.id}>
-      <View style={styles.box}>
-        <View style={styles.boxContent}>
-          <Text>Id: {item.id}</Text>
-          <Text style={styles.title}>{getTeamName(item.firstTeam)} Cups: {item.firstTeamCups}</Text>
-          <Text style={styles.title}>{getTeamName(item.secondTeam)} Cups: {item.secondTeamCups}</Text>
-        </View>
-        <MaterialIcons name="arrow-forward" size={24} color="black" />
+    <View style={[styles.box, item.round != 1 && {marginVertical: ((item.round-1)*(item.round)*60)-((item.round-2)*120)-50}]}>
+      <View style={styles.matchBoxContent}>
+        {/* {getTeamName(item.firstTeam) == "" && 
+          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+        } */}
+        <Text style={styles.matchTitle}>{getTeamName(item.firstTeam)}</Text>
       </View>
-    </Link>
+      <View style={styles.matchBr}></View>
+      <View style={styles.matchBoxContent}>
+
+        {/* {getTeamName(item.secondTeam) == "" && 
+          <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+        } */}
+        <Text style={styles.matchTitle}>{getTeamName(item.secondTeam)}</Text>
+      </View>
+      {/* <MaterialIcons name="arrow-forward" size={24} color="black" /> */}
+    </View>
+  );
+
+  const renderMatchupLinks = ({ item }: { item: Match }) => (
+    <View style={[styles.matchLinkBox, item.round != 0 && {height: ((item.round-1)*(item.round)*60)-((item.round-2)*120), marginVertical: ((item.round-1)*(item.round)*30)-((item.round-2)*60)}]}>
+      <View style={styles.matchLinkBoxContent1}>
+      </View>
+      <View style={styles.matchLinkBoxContent2}>
+        <View style={[styles.matchBr, {paddingTop: ((item.round-1)*(item.round)*30)-((item.round-2)*60)}]}></View>
+      </View>
+    </View>
   );
 
   const renderRound = ({ item }: { item: Round }) => (
-    <FlatList
-      data={item.matches}
-      renderItem={renderItem}
-      keyExtractor={(item) => String(item.id)}
-      scrollEnabled={false}
-    />
+    <View style={{flex: 1, flexDirection: 'row'}}>
+      {item.id != 1 &&
+        <FlatList
+          data={item.matches}
+          style={{width: 80, }}
+          renderItem={renderMatchupLinks}
+          keyExtractor={(item) => String(item.id)}
+          scrollEnabled={false}
+        />
+      }
+      <FlatList
+        data={item.matches}
+        style={{width: 200}}
+        renderItem={renderItem}
+        keyExtractor={(item) => String(item.id)}
+        scrollEnabled={false}
+      />
+    </View>
   );
 
   return (

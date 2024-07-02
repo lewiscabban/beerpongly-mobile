@@ -8,15 +8,10 @@ import {
   Match, createMatchTable, insertMatch, getMatches, updateMatches,
   deleteMatch, deleteMatches,
   getTotalRounds,
+  Matchup,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from '@/styles/defaultStyles';
-
-interface Matchup {
-  id: number
-  firstTeam: Team
-  secondTeam: Team
-}
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
@@ -163,15 +158,6 @@ export default function SetBracket() {
     setTeams(randomTeams)
     updateTeamPositions()
   }
-
-  const renderItem = ({ item }: { item: Team }) => (
-    <View style={styles.box}>
-      <View style={styles.boxContent}>
-        <Text style={styles.title}>position: {item.position} Name: {item.name}</Text>
-      </View>
-      <MaterialIcons name="arrow-forward" size={24} color="black" />
-    </View>
-  );
 
   const renderMatchups = ({ item }: { item: Matchup }) => (
     <View style={styles.matchBox}>
