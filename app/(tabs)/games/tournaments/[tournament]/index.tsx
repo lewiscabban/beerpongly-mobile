@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Link, usePathname, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { styles } from '@/styles/defaultStyles';
 
 
+
 export default function SettingsScreen() {
   const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
@@ -21,9 +22,11 @@ export default function SettingsScreen() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [rounds, setRounds] = useState<Round[]>([]);
   const path = usePathname();
-  const [firstTeam, setfFrstTeam] = useState<Team|null>(null);
-  const [secondTeam, setSecondTeam] = useState<Team|null>(null);
+  const flatListRef = useRef<FlatList>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const tournamentId = Number(path.replace("/games/tournaments/", ""));
+  const width = Dimensions.get('window').width*0.8;
+  const [lastOffsetX, setLastOffsetX] = useState(0);
 
   console.log("tournamanent id: "+ path.replace("/games/tournaments/", ""))
   function getTeamName(id: number): string {
@@ -79,12 +82,39 @@ export default function SettingsScreen() {
     router.replace("games/tournaments/" + tournamentId + "/match/" + item.id);
   }
 
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    setLastOffsetX(offsetX);
+  };
+
+  const handleScrollBeginDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const direction = offsetX > lastOffsetX ? -1 : 1;
+    const nextIndex = currentIndex + direction;
+
+    if (nextIndex >= 0 && nextIndex < rounds.length) {
+      setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }
+  };
+
+  const handleMomentumScrollEnd = (event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const nextIndex = Math.round(offsetX / width);
+    console.log("last")
+
+    if (nextIndex !== currentIndex) {
+      setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }
+  };
+
   const renderItem = ({ item }: { item: Match }) => (
     <Pressable style={{flex: 1, flexDirection: 'row', width: '100%'}} onPress={() => onPlayMatch(item)}>
-      <View style={[styles.box, item.round != 1 && {marginVertical: ((item.round-1)*(item.round)*60)-((item.round-2)*120)-50}]} >
+      <View style={[styles.box, (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) > 1 && {marginVertical: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*60)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*120)-50}]} >
         <View style={[styles.matchBoxContent, item.firstTeam != null && item.firstTeam === item.winner && {backgroundColor: '#E5EDFF', borderTopRightRadius: 8, borderTopLeftRadius: 8}]}>
           {
-            getTeamName(item.firstTeam) == "" && item.round === 1
+            getTeamName(item.firstTeam) == "" && (item.round) === 1
             ? 
             <Text style={[styles.matchTitleLeft, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
             :
@@ -97,7 +127,7 @@ export default function SettingsScreen() {
                 <></> :
                 <View>
                   {/* {
-                    getTeamName(item.secondTeam) === "" && item.round === 1 ?
+                    getTeamName(item.secondTeam) === "" && (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) === 1 ?
                     <></> :
                     <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
                       <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
@@ -116,7 +146,7 @@ export default function SettingsScreen() {
         <View style={styles.matchBr}></View>
         <View style={[styles.matchBoxContent, item.secondTeam != null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}]}>
           {
-            getTeamName(item.secondTeam) === "" && item.round === 1
+            getTeamName(item.secondTeam) === "" && (item.round) === 1
             ? 
             <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797', textAlignVertical: 'center'}]}>BYE</Text>
             :
@@ -129,7 +159,7 @@ export default function SettingsScreen() {
                 <></> :
                 <View>
                 {/* {
-                  getTeamName(item.secondTeam) === "" && item.round === 1 ?
+                  getTeamName(item.secondTeam) === "" && (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) === 1 ?
                   <></> :
                   <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
                     <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
@@ -155,11 +185,11 @@ export default function SettingsScreen() {
   );
 
   const renderMatchupLinks = ({ item }: { item: Match }) => (
-    <View style={[styles.matchLinkBox, item.round != 0 && {height: ((item.round-1)*(item.round)*60)-((item.round-2)*120), marginVertical: ((item.round-1)*(item.round)*30)-((item.round-2)*60)}]}>
+    <View style={[styles.matchLinkBox, (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) != 0 && {height: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*60)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*120), marginVertical: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*30)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*60)}]}>
       <View style={styles.matchLinkBoxContent1}>
       </View>
       <View style={styles.matchLinkBoxContent2}>
-        <View style={[styles.matchBr, {paddingTop: ((item.round-1)*(item.round)*30)-((item.round-2)*60)}]}></View>
+        <View style={[styles.matchBr, {paddingTop: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*30)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*60)}]}></View>
       </View>
     </View>
   );
@@ -190,6 +220,17 @@ export default function SettingsScreen() {
       <ScrollView style={{height: '89%'}}>
         <FlatList
         data={rounds}
+        ref={flatListRef}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
+        // onScrollBeginDrag={handleScrollBeginDrag}
+        // onScroll={handleScroll}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        snapToInterval={width}
+        getItemLayout={(data, index) => (
+          { length: width, offset: width * index, index }
+        )}
+        showsHorizontalScrollIndicator={false}
         horizontal
         renderItem={renderRound}
         keyExtractor={(item) => String(item.id)}
