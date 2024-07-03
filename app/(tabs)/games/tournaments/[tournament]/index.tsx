@@ -28,7 +28,6 @@ export default function SettingsScreen() {
   const width = Dimensions.get('window').width*0.8;
   const [lastOffsetX, setLastOffsetX] = useState(0);
 
-  console.log("tournamanent id: "+ path.replace("/games/tournaments/", ""))
   function getTeamName(id: number): string {
     for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
@@ -82,29 +81,42 @@ export default function SettingsScreen() {
     router.replace("games/tournaments/" + tournamentId + "/match/" + item.id);
   }
 
+  function onSetBack() {
+    const prevIndex = currentIndex - 1;
+    if (prevIndex >= 0) {
+      // setCurrentIndex(prevIndex);
+      flatListRef.current?.scrollToIndex({ index: prevIndex, animated: true });
+    }
+  }
+
+  function onSetForward() {
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < rounds.length) {
+      // setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }
+  }
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    console.log("scrolling")
     const offsetX = event.nativeEvent.contentOffset.x;
     setLastOffsetX(offsetX);
-  };
+    const nextIndex = Math.round(offsetX / width);
 
-  const handleScrollBeginDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const direction = offsetX > lastOffsetX ? -1 : 1;
-    const nextIndex = currentIndex + direction;
-
-    if (nextIndex >= 0 && nextIndex < rounds.length) {
+    if (nextIndex !== currentIndex) {
       setCurrentIndex(nextIndex);
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+      // flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }
   };
 
   const handleMomentumScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
+    setLastOffsetX(offsetX);
     const nextIndex = Math.round(offsetX / width);
     console.log("last")
 
     if (nextIndex !== currentIndex) {
-      setCurrentIndex(nextIndex);
+      // setCurrentIndex(nextIndex);
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }
   };
@@ -222,8 +234,7 @@ export default function SettingsScreen() {
         data={rounds}
         ref={flatListRef}
         onMomentumScrollEnd={handleMomentumScrollEnd}
-        // onScrollBeginDrag={handleScrollBeginDrag}
-        // onScroll={handleScroll}
+        onScroll={handleScroll}
         snapToAlignment="start"
         decelerationRate="fast"
         snapToInterval={width}
@@ -236,15 +247,26 @@ export default function SettingsScreen() {
         keyExtractor={(item) => String(item.id)}
       />
       </ScrollView>
-      
       <View style={styles.buttonStyleContainer}>
-        <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
-          <Text style={styles.secondaryText}>Edit</Text>
-        </Pressable>
+        <View style={styles.centerHorizontally}>
+          <View style={styles.buttonInnerContainer}>
+            <Pressable onPress={onSetBack}>
+              <MaterialIcons style={styles.matchTitleLeft} name="arrow-back" size={22} color="black" />
+            </Pressable>
+            <Pressable onPress={onSetForward}>
+              <MaterialIcons style={styles.matchTitleLeft} name="arrow-forward" size={22} color="black" />
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.buttonInnerContainer}>
+          <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
+            <Text style={styles.secondaryText}>Edit</Text>
+          </Pressable>
 
-        <Pressable style={styles.primaryButton} onPress={onLeaderboardPress}>
-          <Text style={styles.primaryText}>Leaderboard</Text>
-        </Pressable>
+          <Pressable style={styles.primaryButton} onPress={onLeaderboardPress}>
+            <Text style={styles.primaryText}>Leaderboard</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
