@@ -97,6 +97,18 @@ export default function SettingsScreen() {
     }
   }
 
+  function getIndex(): number {
+    return (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)
+  }
+
+  function getHiddenLink(item: Match): any {
+    return (item.round <= currentIndex+1 && item.round != rounds.length ? {borderColor: '#F8FAFC', borderWidth: 0} : {})
+  }
+
+  function getHiddenMatchup(item: Match): any {
+    return (item.round <= currentIndex && item.round != rounds.length-1 ? {borderColor: '#F8FAFC', borderWidth: 0, color: '#F8FAFC', backgroundColor: '#F8FAFC'} : {})
+  }
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     console.log("scrolling")
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -105,7 +117,6 @@ export default function SettingsScreen() {
 
     if (nextIndex !== currentIndex) {
       setCurrentIndex(nextIndex);
-      // flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }
   };
 
@@ -123,68 +134,68 @@ export default function SettingsScreen() {
 
   const renderItem = ({ item }: { item: Match }) => (
     <Pressable style={{flex: 1, flexDirection: 'row', width: '100%'}} onPress={() => onPlayMatch(item)}>
-      <View style={[styles.box, (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) > 1 && {marginVertical: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*60)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*120)-50}]} >
-        <View style={[styles.matchBoxContent, item.firstTeam != null && item.firstTeam === item.winner && {backgroundColor: '#E5EDFF', borderTopRightRadius: 8, borderTopLeftRadius: 8}]}>
+      <View style={[styles.box, (item.round - (getIndex())) > 1 && {marginVertical: (((item.round - (getIndex()))-1)*((item.round - (getIndex())))*60)-(((item.round - (getIndex()))-2)*120)-50}, getHiddenMatchup(item)]} >
+        <View style={[styles.matchBoxContent, item.firstTeam != null && item.firstTeam === item.winner && {backgroundColor: '#E5EDFF', borderTopRightRadius: 8, borderTopLeftRadius: 8}, getHiddenMatchup(item)]}>
           {
             getTeamName(item.firstTeam) == "" && (item.round) === 1
             ? 
-            <Text style={[styles.matchTitleLeft, {fontWeight: 500, color: '#979797'}]}>BYE</Text>
+            <Text style={[styles.matchTitleLeft, {fontWeight: 500, color: '#979797'}, getHiddenMatchup(item)]}>BYE</Text>
             :
             <View style={{flex: 1, flexDirection: 'row', width: '100%'}}>
               <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-start'}}>
-                <Text style={styles.matchTitle}>{getTeamName(item.firstTeam)}</Text>
+                <Text style={[styles.matchTitle, getHiddenMatchup(item)]}>{getTeamName(item.firstTeam)}</Text>
               </View>
               {
                 item.winner === null ?
                 <></> :
                 <View>
                   {/* {
-                    getTeamName(item.secondTeam) === "" && (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) === 1 ?
+                    getTeamName(item.secondTeam) === "" && (item.round - (getIndex())) === 1 ?
                     <></> :
                     <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                      <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
+                      <Text style={[styles.matchTitleLeft, getHiddenMatchup(item)]}>{item.firstTeamCups}</Text>
                     </View>
                   } */}
                   {
                     item.firstTeam != null && item.firstTeam === item.winner ?
-                    <MaterialIcons style={styles.matchTitleLeft} name="check" size={22} color="black" /> :
-                    <MaterialIcons style={styles.matchTitleLeft} name="close" size={22} color="black" />
+                    <MaterialIcons style={[styles.matchTitleLeft, getHiddenMatchup(item)]} name="check" size={22} color="black" /> :
+                    <MaterialIcons style={[styles.matchTitleLeft, getHiddenMatchup(item)]} name="close" size={22} color="black" />
                   }
                 </View>
               }
             </View>
           }
         </View>
-        <View style={styles.matchBr}></View>
-        <View style={[styles.matchBoxContent, item.secondTeam != null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}]}>
+        <View style={[styles.matchBr, getHiddenMatchup(item)]}></View>
+        <View style={[styles.matchBoxContent, item.secondTeam != null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}, getHiddenMatchup(item)]}>
           {
             getTeamName(item.secondTeam) === "" && (item.round) === 1
             ? 
-            <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797', textAlignVertical: 'center'}]}>BYE</Text>
+            <Text style={[styles.matchTitle, {fontWeight: 500, color: '#979797', textAlignVertical: 'center'}, getHiddenMatchup(item)]}>BYE</Text>
             :
             <View style={{flex: 1, flexDirection: 'row'}}>
               <View style={{flex: 1, flexDirection: 'column', alignItems: 'flex-start'}}>
-                <Text style={styles.matchTitle}>{getTeamName(item.secondTeam)}</Text>
+                <Text style={[styles.matchTitle, getHiddenMatchup(item)]}>{getTeamName(item.secondTeam)}</Text>
               </View>
               {
                 item.winner === null ?
                 <></> :
                 <View>
                 {/* {
-                  getTeamName(item.secondTeam) === "" && (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) === 1 ?
+                  getTeamName(item.secondTeam) === "" && (item.round - (getIndex())) === 1 ?
                   <></> :
                   <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                    <Text style={styles.matchTitleLeft}>{item.firstTeamCups}</Text>
+                    <Text style={[styles.matchTitleLeft, getHiddenMatchup(item)]}>{item.firstTeamCups}</Text>
                   </View>
                 } */}
                   {
                     item.secondTeam != null && item.secondTeam === item.winner ?
                     <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                      <MaterialIcons style={styles.matchTitleLeft} name="check" size={22} color="black" />
+                      <MaterialIcons style={[styles.matchTitleLeft, getHiddenMatchup(item)]} name="check" size={22} color="black" />
                     </View>
                     :
                     <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                      <MaterialIcons style={styles.matchTitleLeft} name="close" size={22} color="black" />
+                      <MaterialIcons style={[styles.matchTitleLeft, getHiddenMatchup(item)]} name="close" size={22} color="black" />
                     </View>
                   }
                 </View>
@@ -197,11 +208,11 @@ export default function SettingsScreen() {
   );
 
   const renderMatchupLinks = ({ item }: { item: Match }) => (
-    <View style={[styles.matchLinkBox, (item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)) != 0 && {height: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*60)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*120), marginVertical: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*30)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*60)}]}>
-      <View style={styles.matchLinkBoxContent1}>
+    <View style={[styles.matchLinkBox, (item.round - (getIndex())) != 0 && {height: (((item.round - (getIndex()))-1)*((item.round - (getIndex())))*60)-(((item.round - (getIndex()))-2)*120), marginVertical: (((item.round - (getIndex()))-1)*((item.round - (getIndex())))*30)-(((item.round - (getIndex()))-2)*60)}]}>
+      <View style={[styles.matchLinkBoxContent1, getHiddenLink(item)]}>
       </View>
       <View style={styles.matchLinkBoxContent2}>
-        <View style={[styles.matchBr, {paddingTop: (((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-1)*((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex)))*30)-(((item.round - (currentIndex >= rounds.length -1 ? currentIndex - 1 : currentIndex))-2)*60)}]}></View>
+        <View style={[styles.matchBr, {paddingTop: (((item.round - (getIndex()))-1)*((item.round - (getIndex())))*30)-(((item.round - (getIndex()))-2)*60)}, , getHiddenLink(item)]}></View>
       </View>
     </View>
   );
