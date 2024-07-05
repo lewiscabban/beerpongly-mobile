@@ -84,7 +84,6 @@ export default function SettingsScreen() {
   function onSetBack() {
     const prevIndex = currentIndex - 1;
     if (prevIndex >= 0) {
-      // setCurrentIndex(prevIndex);
       flatListRef.current?.scrollToIndex({ index: prevIndex, animated: true });
     }
   }
@@ -92,7 +91,13 @@ export default function SettingsScreen() {
   function onSetForward() {
     const nextIndex = currentIndex + 1;
     if (nextIndex < rounds.length) {
-      // setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }
+  }
+
+  function onSetRound(index: number) {
+    const nextIndex = index - 1;
+    if (nextIndex < rounds.length) {
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }
   }
@@ -109,9 +114,7 @@ export default function SettingsScreen() {
     return (item.round <= currentIndex && item.round != rounds.length-1 ? {borderColor: '#F8FAFC', borderWidth: 0, color: '#F8FAFC', backgroundColor: '#F8FAFC'} : {})
   }
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    console.log("scrolling")
-    const offsetX = event.nativeEvent.contentOffset.x;
+  const updateindex = (offsetX: number) => {
     setLastOffsetX(offsetX);
     const nextIndex = Math.round(offsetX / width);
 
@@ -120,12 +123,16 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    updateindex(offsetX)
+  };
+
   const handleMomentumScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     setLastOffsetX(offsetX);
     const nextIndex = Math.round(offsetX / width);
-    console.log("last")
-
+    console.log("offset: " + offsetX)
     if (nextIndex !== currentIndex) {
       // setCurrentIndex(nextIndex);
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
@@ -167,7 +174,7 @@ export default function SettingsScreen() {
           }
         </View>
         <View style={[styles.matchBr, getHiddenMatchup(item)]}></View>
-        <View style={[styles.matchBoxContent, item.secondTeam != null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}, getHiddenMatchup(item)]}>
+        <View style={[styles.matchBoxContent, item.secondTeam !== null && item.secondTeam === item.winner && {backgroundColor: '#E5EDFF', borderBottomRightRadius: 8, borderBottomLeftRadius: 8}, getHiddenMatchup(item)]}>
           {
             getTeamName(item.secondTeam) === "" && (item.round) === 1
             ? 
@@ -217,6 +224,18 @@ export default function SettingsScreen() {
     </View>
   );
 
+  const renderRoundNumbers = ({ item }: { item: Round }) => (
+    <Pressable
+      style={[
+        {flex: 1, flexDirection: 'row', height: 20, flexGrow: 0, width: 20, alignItems: 'center'},
+        item.matches[0].round-1 === currentIndex && {backgroundColor: '#E5EDFF', borderWidth: 1, borderColor: '#211071' ,borderRadius: 3}
+      ]}
+      onPress={() =>onSetRound(item.matches[0]?.round)}
+    >
+      <Text style={{flex: 1, textAlign: 'center'}}>{item.matches[0]?.round}</Text>
+    </Pressable>
+  );
+
   const renderRound = ({ item }: { item: Round }) => (
     <View style={{flex: 1, flexDirection: 'row'}}>
       {item.id != 1 &&
@@ -240,7 +259,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{height: '89%'}}>
+      <ScrollView style={{height: '80%'}}>
         <FlatList
         data={rounds}
         ref={flatListRef}
@@ -259,11 +278,22 @@ export default function SettingsScreen() {
       />
       </ScrollView>
       <View style={styles.buttonStyleContainer}>
-        <View style={styles.centerHorizontally}>
-          <View style={styles.buttonInnerContainer}>
+        <View style={[styles.centerHorizontally]}>
+          <View style={styles.buttonInnerContainerPageNumber}>
             <Pressable onPress={onSetBack}>
               <MaterialIcons style={styles.matchTitleLeft} name="arrow-back" size={22} color="black" />
             </Pressable>
+              <View style={{width: rounds.length*20}}>
+                <FlatList
+                  data={rounds}
+                  style={{width: rounds.length*20}}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal
+                  scrollEnabled={false}
+                  renderItem={renderRoundNumbers}
+                  keyExtractor={(item) => String(item.id)}
+                />
+              </View>
             <Pressable onPress={onSetForward}>
               <MaterialIcons style={styles.matchTitleLeft} name="arrow-forward" size={22} color="black" />
             </Pressable>

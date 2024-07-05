@@ -337,6 +337,12 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     backgroundColor: '#F8FAFC',
   },
+  buttonInnerContainerPageNumber: {
+    flex: 1,
+    textAlignVertical: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#F8FAFC',
+  },
   centerHorizontally: {
     flex: 1,
     alignItems: 'center',
