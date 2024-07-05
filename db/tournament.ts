@@ -31,6 +31,7 @@ export interface Match {
 export interface Round {
     id: number;
     matches: Match[]
+    round: number
 }
 
 export interface Matchup {

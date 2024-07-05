@@ -36,10 +36,22 @@ export default function SetBracket() {
   useEffect(() => {
     let newMatchups: Matchup[] = [];
     let count = 0;
-    for (let i = 0; i < teams.length-1; i+=2) {
-      if (i+1 < teams.length) {
-        const firstTeam = teams[i];
-        const secondTeam = teams[i+1];
+    let organisedTeams = [...teams]
+    organisedTeams.sort((n1,n2) => {
+      if (n1.position < n2.position) {
+          return 1;
+      }
+  
+      if (n1.position > n2.position) {
+          return -1;
+      }
+  
+      return 0;
+    })
+    for (let i = 0; i < organisedTeams.length-1; i+=2) {
+      if (i+1 < organisedTeams.length) {
+        const firstTeam = organisedTeams[i];
+        const secondTeam = organisedTeams[i+1];
         newMatchups.push({
           id: count,
           firstTeam: firstTeam,
@@ -148,15 +160,15 @@ export default function SetBracket() {
   }
 
   const handleRandomise = () => {
-    async function updateTeamPositions() {
+    async function updateTeamPositions(randomTeams: Team[]) {
       const db = await initTournamentDB();
-      await updateTeams(db, teams);
+      await updateTeams(db, randomTeams);
     }
   
     let randomTeams = [...teams];
     shuffle(randomTeams)
     setTeams(randomTeams)
-    updateTeamPositions()
+    updateTeamPositions(randomTeams)
   }
 
   const renderMatchups = ({ item }: { item: Matchup }) => (
@@ -228,13 +240,15 @@ export default function SetBracket() {
       </ScrollView>
 
       <View style={styles.buttonStyleContainer}>
-        <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
-          <Text style={styles.secondaryText}>Randomise</Text>
-        </Pressable>
+        <View style={styles.buttonInnerContainer}>
+          <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
+            <Text style={styles.secondaryText}>Randomise</Text>
+          </Pressable>
 
-        <Pressable style={styles.primaryButton} onPress={createMatches}>
-          <Text style={styles.primaryText}>Save</Text>
-        </Pressable>
+          <Pressable style={styles.primaryButton} onPress={createMatches}>
+            <Text style={styles.primaryText}>Save</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );

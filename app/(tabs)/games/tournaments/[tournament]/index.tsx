@@ -44,11 +44,18 @@ export default function SettingsScreen() {
       await createTournamentTable(db);
       setTournament(await getTournament(db, tournamentId));
       setTeams(await getTeams(db, tournamentId));
-      setMatches(await getMatches(db, tournamentId));
+      let getTournamentMatches = await getMatches(db, tournamentId)
+      if (getTournamentMatches.length === 0) {
+        console.log(matches)
+        onSetBracketPress()
+      }
+
+      setMatches(getTournamentMatches);
     }
 
     createTables();
   }, [isVisible]);
+
   useEffect(() => {
     let totalRounds = 0
     for (let i = 0; i < matches.length; i++) {
@@ -63,7 +70,7 @@ export default function SettingsScreen() {
           round.push(element)
         }
       }
-      newRounds.push({"id": i, "matches": round})
+      newRounds.push({"id": i, "matches": round, "round": i})
       console.log(round)
     }
     setRounds(newRounds)
@@ -227,12 +234,12 @@ export default function SettingsScreen() {
   const renderRoundNumbers = ({ item }: { item: Round }) => (
     <Pressable
       style={[
-        {flex: 1, flexDirection: 'row', height: 20, flexGrow: 0, width: 20, alignItems: 'center'},
-        item.matches[0].round-1 === currentIndex && {backgroundColor: '#E5EDFF', borderWidth: 1, borderColor: '#211071' ,borderRadius: 3}
+        {flex: 1, flexDirection: 'row', height: 30, flexGrow: 0, width: 30, alignItems: 'center'},
+        item.round-1 === currentIndex && {backgroundColor: '#E5EDFF', borderWidth: 1, borderColor: '#211071' ,borderRadius: 3}
       ]}
-      onPress={() =>onSetRound(item.matches[0]?.round)}
+      onPress={() =>onSetRound(item.round)}
     >
-      <Text style={{flex: 1, textAlign: 'center'}}>{item.matches[0]?.round}</Text>
+      <Text style={{flex: 1, textAlign: 'center', fontSize: 20}}>{item.round}</Text>
     </Pressable>
   );
 
@@ -241,7 +248,7 @@ export default function SettingsScreen() {
       {item.id != 1 &&
         <FlatList
           data={item.matches}
-          style={{width: Dimensions.get('window').width*0.2, }}
+          style={{width: Dimensions.get('window').width*0.2, minHeight: Dimensions.get('window').width*1.5}}
           renderItem={renderMatchupLinks}
           keyExtractor={(item) => String(item.id)}
           scrollEnabled={false}
@@ -249,44 +256,51 @@ export default function SettingsScreen() {
       }
       <FlatList
         data={item.matches}
-        style={{width: Dimensions.get('window').width*0.6}}
+        style={{width: Dimensions.get('window').width*0.6, minHeight: Dimensions.get('window').width*1.5}}
         renderItem={renderItem}
         keyExtractor={(item) => String(item.id)}
         scrollEnabled={false}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       />
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{height: '80%'}}>
-        <FlatList
-        data={rounds}
-        ref={flatListRef}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
-        onScroll={handleScroll}
-        snapToAlignment="start"
-        decelerationRate="fast"
-        snapToInterval={width}
-        getItemLayout={(data, index) => (
-          { length: width, offset: width * index, index }
-        )}
+      <ScrollView
+        style={{height: '82%'}}
+        showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        horizontal
-        renderItem={renderRound}
-        keyExtractor={(item) => String(item.id)}
-      />
+      >
+        <FlatList
+          data={rounds}
+          ref={flatListRef}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          onScroll={handleScroll}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          snapToInterval={width}
+          getItemLayout={(data, index) => (
+            { length: width, offset: width * index, index }
+          )}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          renderItem={renderRound}
+          keyExtractor={(item) => String(item.id)}
+        />
       </ScrollView>
       <View style={styles.buttonStyleContainer}>
         <View style={[styles.centerHorizontally]}>
           <View style={styles.buttonInnerContainerPageNumber}>
             <Pressable onPress={onSetBack}>
-              <MaterialIcons style={styles.matchTitleLeft} name="arrow-back" size={22} color="black" />
+              <MaterialIcons style={styles.nextPageText} name="arrow-back" size={30} color="black" />
             </Pressable>
-              <View style={{width: rounds.length*20}}>
+              <View style={{width: rounds.length*30}}>
                 <FlatList
                   data={rounds}
-                  style={{width: rounds.length*20}}
+                  style={{width: rounds.length*30}}
                   showsHorizontalScrollIndicator={false}
                   horizontal
                   scrollEnabled={false}
@@ -295,10 +309,11 @@ export default function SettingsScreen() {
                 />
               </View>
             <Pressable onPress={onSetForward}>
-              <MaterialIcons style={styles.matchTitleLeft} name="arrow-forward" size={22} color="black" />
+              <MaterialIcons style={styles.nextPageText} name="arrow-forward" size={22} color="black" />
             </Pressable>
           </View>
         </View>
+        <View style={{padding: 5}}></View>
         <View style={styles.buttonInnerContainer}>
           <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
             <Text style={styles.secondaryText}>Edit</Text>

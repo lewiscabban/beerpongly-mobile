@@ -165,6 +165,12 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  nextPageText: {
+    paddingHorizontal: 10,
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
   matchButtonTitle: {
     paddingHorizontal: 10,
     fontSize: 18,
@@ -333,8 +339,8 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
     flexDirection: 'row',
     // paddingHorizontal: 20,
-    paddingBottom: 15,
-    paddingTop: 15,
+    paddingBottom: 5,
+    paddingTop: 5,
     backgroundColor: '#F8FAFC',
   },
   buttonInnerContainerPageNumber: {

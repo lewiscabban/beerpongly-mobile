@@ -48,7 +48,7 @@ export default function SetBracket() {
   }, [isVisible]);
 
   useEffect(() => {
-    let newLeaderboard: Leaderboard[] = [{id: 0, name: "this is the title team", cups: 0, wins: 0, losses: 0, header: true}]
+    let newLeaderboard: Leaderboard[] = []
     for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
       if (team.name != "") {
@@ -97,6 +97,10 @@ export default function SetBracket() {
   
       return 0;
     })
+    newLeaderboard.unshift({id: 0, name: "this is the title team", cups: 0, wins: 0, losses: 0, header: true})
+    for (let i = 0; i < newLeaderboard.length; i++) {
+      newLeaderboard[i].id = i;
+    }
     setLeaderboards(newLeaderboard)
   }, [teams || matches]);
 
@@ -146,9 +150,15 @@ export default function SetBracket() {
 
   return (
     <View style={styles.leaderboardContainer}>
-      <ScrollView style={{height: '89%'}}>
+      <ScrollView
+        style={{height: '87%'}}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <View style={styles.matchScroll}>
           <FlatList
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             scrollEnabled={false}
             data={leaderboard}
             renderItem={renderItem}
@@ -158,6 +168,7 @@ export default function SetBracket() {
       </ScrollView>
 
       <View style={styles.buttonStyleContainer}>
+        <View style={styles.buttonInnerContainer}>
         <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
           <Text style={styles.secondaryText}>Edit</Text>
         </Pressable>
@@ -165,6 +176,7 @@ export default function SetBracket() {
         <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
           <Text style={styles.primaryText}>Tournament</Text>
         </Pressable>
+        </View>
       </View>
     </View>
   );
