@@ -105,6 +105,7 @@ export default function SetBracket() {
   }, [teams || matches]);
 
   function onTournamentPress() {
+    // router.back()
     router.replace("games/tournaments/" + tournamentId);
   }
 
