@@ -8,11 +8,11 @@ import {
   Team, createTeamTable, insertTeam, getTeams,
   getTotalRounds,
 } from '@/db/tournament';
-import { styles } from '@/styles/defaultStyles';
 
 interface InputTeam {
   id: number;
   name: string;
+  errorText: string;
 }
 
 interface Input {
@@ -25,34 +25,27 @@ interface Input {
 export default function AddTournament() {
   const [input, setInput] = useState<Input>({
     name: '',
-    teams: [{ id: 1, name: '' }],
+    teams: [{id: 1, name: '', errorText: ''}],
     navigation: '',
     progress: ''
   });
+  const [errorTeamName, setErrorTeamName] = useState<Boolean>(false);
+  const [errorTeamNameText, setErrorTeamNameText] = useState<string>("");
+  const [errorTournamentSizeText, setErrorTournamentSizeText] = useState<string>("");
+  const [errorImputTeamsText, setErrorInputTeamsText] = useState<string[]>([""]);
 
   const inputRefs = useRef<{ [key: number]: TextInput | null }>({});
 
-  useEffect(() => {
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      // Reset focus to the first input field after hiding the keyboard
-      inputRefs.current[1]?.focus();
-    });
-
-    return () => {
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
   const handleAddTeam = () => {
     const newId = input.teams.length + 1;
-    const newTeam: InputTeam = { id: newId, name: '' };
+    const newTeam: InputTeam = { id: newId, name: '', errorText: '' };
     setInput(prevInput => {
       const newTeams = [...prevInput.teams, newTeam];
       return { ...prevInput, teams: newTeams };
     });
     setTimeout(() => {
       inputRefs.current[newId]?.focus();
-    }, 100);
+    }, 0);
   };
 
   const handleTeamChange = (teamId: number, text: string) => {
@@ -82,21 +75,38 @@ export default function AddTournament() {
   };
 
   const handleSubmit = async () => {
+    let newInput = {...input}
     let isComplete: boolean = true;
-    for (let i = 0; i < input.teams.length; i++) {
-      const team = input.teams[i];
+    if(newInput.name === "") {
+      setErrorTeamNameText("Please enter a name.")
+      isComplete = false
+    }
+    else if(!/^[A-Za-z0-9]*$/.test(newInput.name)) {
+      setErrorTeamNameText("Name can only be digits or letters.")
+      isComplete = false
+    }
+    else {
+      setErrorTeamNameText("")
+    }
+    for (let i = 0; i < newInput.teams.length; i++) {
+      const team = newInput.teams[i];
       if (team.name === "") {
         isComplete = false;
         console.log("Team " + (i + 1) + " cannot be empty.");
+        team.errorText = "Team name cannot be empty."
+      }
+      else {
+        team.errorText = ""
       }
     }
-    if (input.teams.length >= 4 && isComplete && input.name !== "") {
+
+    if (newInput.teams.length >= 4 && isComplete && newInput.name !== "") {
       try {
         const db = await initTournamentDB();
         await createTournamentTable(db);
-        const tournamentId = await insertTournament(db, input.name, input.progress);
+        const tournamentId = await insertTournament(db, newInput.name, newInput.progress);
         await createTeamTable(db);
-        let currentTeams = input.teams.length;
+        let currentTeams = newInput.teams.length;
         let totalRounds = 0;
         while (currentTeams > 1) {
           currentTeams /= 2;
@@ -104,27 +114,29 @@ export default function AddTournament() {
         }
 
         for (let i = 0; i < Math.pow(2, totalRounds); i++) {
-          if (input.teams[i]) {
-            const team = input.teams[i];
+          if (newInput.teams[i]) {
+            const team = newInput.teams[i];
             await insertTeam(db, team.name, i + 1, tournamentId);
           } else {
             await insertTeam(db, "", i + 1, tournamentId);
           }
         }
         console.log(await getTeams(db, tournamentId));
-        console.log('Saved input:', JSON.stringify(input));
+        console.log('Saved input:', JSON.stringify(newInput));
         router.push("games/tournaments/" + tournamentId + "/setBracket");
       } catch (error) {
         console.error('Failed to save input to AsyncStorage', error);
       }
     } else {
-      if (input.teams.length < 4) {
-        console.log("minimum teams is 4, got: " + input.teams.length);
+      if (newInput.teams.length < 4) {
+        console.log("minimum teams is 4, got: " + newInput.teams.length);
+        setErrorTournamentSizeText("minimum teams is 4, got: " + newInput.teams.length)
       }
-      if (input.name === "") {
-        console.log("Tournament name cannot be empty.");
+      else {
+        setErrorTournamentSizeText("")
       }
     }
+    setInput(newInput)
   };
 
   return (
@@ -134,30 +146,34 @@ export default function AddTournament() {
           <Text style={styles.inputHeader}>Enter Tournament Name:</Text>
           <View style={styles.inputView}>
             <TextInput
-              style={styles.input}
+              style={errorTeamNameText === "" ? styles.input : styles.inputError}
               value={input.name}
               placeholder='Tournament Name'
               onChangeText={handleNameChange}
             />
           </View>
         </View>
+        <Text style={[styles.errorText, errorTeamNameText === "" && {height: 0, paddingBottom: 0}]}>{errorTeamNameText}</Text>
         <Text style={styles.inputHeader}>Add Teams:</Text>
         <ScrollView style={{ maxHeight: '80%' }}>
           {input.teams.map(team => (
-            <View key={team.id} style={styles.teamContainer}>
-              <TextInput
-                ref={ref => (inputRefs.current[team.id] = ref)}
-                style={styles.input}
-                value={team.name}
-                placeholder={'Team ' + team.id}
-                onChangeText={text => handleTeamChange(team.id, text)}
-                onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) =>
-                  handleTeamKeyPress(team.id, event)
-                }
-              />
-              <Pressable style={styles.deleteButton} onPress={() => handleDeleteTeam(team.id)}>
-                <MaterialIcons name="delete" size={24} color="#ff0000" />
-              </Pressable>
+            <View>
+              <View key={team.id} style={styles.teamContainer}>
+                <TextInput
+                  ref={ref => (inputRefs.current[team.id] = ref)}
+                  style={team.errorText === "" ? styles.input : styles.inputError}
+                  value={team.name}
+                  placeholder={'Team ' + team.id}
+                  onChangeText={text => handleTeamChange(team.id, text)}
+                  onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) =>
+                    handleTeamKeyPress(team.id, event)
+                  }
+                />
+                <Pressable style={styles.deleteButton} onPress={() => handleDeleteTeam(team.id)}>
+                  <MaterialIcons name="delete" size={24} color="#ff0000" />
+                </Pressable>
+              </View>
+              <Text style={[styles.errorText, team.errorText === "" && {height: 0, paddingBottom: 0}]}>{team.errorText}</Text>
             </View>
           ))}
         </ScrollView>
@@ -168,6 +184,7 @@ export default function AddTournament() {
           <Text style={styles.gamesButtonText}>Add Team</Text>
         </Pressable>
       </View>
+      <Text style={[styles.errorText, errorTournamentSizeText === "" && {height: 0, paddingBottom: 0}]}>{errorTournamentSizeText}</Text>
       <View style={styles.buttonStyleContainer}>
         <Pressable style={styles.singleButton} onPress={handleSubmit}>
           <Text style={styles.primaryText}>Save</Text>
@@ -177,17 +194,13 @@ export default function AddTournament() {
   );
 }
 
-const custonstyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F8FAFC',
     position: 'relative',
-  },
-  inputContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
   },
   input: {
     flex: 1,
@@ -199,12 +212,30 @@ const custonstyles = StyleSheet.create({
     borderWidth: 1,
     height: 40,
   },
+  inputError: {
+    flex: 1,
+    marginLeft: 15,
+    marginRight: 15,
+    paddingLeft: 9,
+    borderRadius: 8,
+    borderColor: 'red',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    height: 40,
+  },
   inputHeader: {
     alignItems: "center",
     paddingLeft: 25,
     paddingBottom: 5,
     fontWeight: 'bold',
     color: '#211071',
+  },
+  errorText: {
+    alignItems: "center",
+    paddingLeft: 25,
+    fontWeight: 'bold',
+    color: 'red',
+    paddingBottom: 10,
   },
   deleteButton: {
     justifyContent: 'center',
@@ -230,43 +261,12 @@ const custonstyles = StyleSheet.create({
     backgroundColor: '#211071',
     height: 50,
   },
-  primaryButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    marginLeft: 7.5,
-    marginRight: 15,
-    borderRadius: 8,
-    elevation: 3,
-    backgroundColor: '#211071',
-    height: 50,
-  },
   primaryText: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
-  },
-  secondaryButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    marginLeft: 15,
-    marginRight: 7.5,
-    borderRadius: 8,
-    elevation: 3,
-    backgroundColor: 'white',
-    height: 50,
-  },
-  secondaryText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: '#211071',
   },
   buttonStyleContainer: {
     position: 'absolute',
@@ -285,14 +285,6 @@ const custonstyles = StyleSheet.create({
   inputView: {
     height: 40,
     width: '100%',
-  },
-  addTeamsView: {
-    left: 0,
-    right: 0,
-    height: 55,
-    width: '100%',
-    paddingBottom: 8,
-    paddingTop: 8,
   },
   gamesView: {
     left: 0,
