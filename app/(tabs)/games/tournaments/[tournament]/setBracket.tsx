@@ -9,9 +9,10 @@ import {
   deleteMatch, deleteMatches,
   getTotalRounds,
   Matchup,
+  updateTournament,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
-import { styles } from '@/styles/defaultStyles';
+// import { styles } from '@/styles/defaultStyles';
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
@@ -151,12 +152,15 @@ export default function SetBracket() {
     for (let i = 0; i < matches.length; i++) {
       await updateMatches(db, matches)
     }
-
-    matches = await getMatches(db, tournamentId);
-    for (let i = 0; i < matches.length; i++) {
-      console.log("t1: " + matches[i].firstTeam + " t2: " + matches[i].secondTeam + " match round: " + matches[i].round + " i: " + i + " id: " + matches[i].id + " nextmatch: " + matches[i].nextMatch + " 1: " + matches[i].firstPreviousMatchId + " 2: " + matches[i].secondPreviousMatchId)
+    if (tournament) {
+      await updateTournament(db, {...tournament, progress: "1"})
     }
-    router.push("games/tournaments/" + tournamentId);
+    
+    router.replace("games/tournaments/" + tournamentId);
+  }
+
+  const handelCancel = () => {
+    router.replace("games/tournaments/" + tournamentId);
   }
 
   const handleRandomise = () => {
@@ -241,10 +245,14 @@ export default function SetBracket() {
 
       <View style={styles.buttonStyleContainer}>
         <View style={styles.buttonInnerContainer}>
+          {tournament?.progress && 
+            <Pressable style={styles.cancelButton} onPress={handelCancel}>
+              <MaterialIcons name="arrow-back" size={24} color="#211071" />
+            </Pressable>
+          }
           <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
             <Text style={styles.secondaryText}>Randomise</Text>
           </Pressable>
-
           <Pressable style={styles.primaryButton} onPress={createMatches}>
             <Text style={styles.primaryText}>Save</Text>
           </Pressable>
@@ -253,3 +261,253 @@ export default function SetBracket() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  box: {
+    flex: 1,
+    // flexDirection: 'column',
+    // justifyContent: 'space-between',
+    // alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    // verticalAlign: 'middle',
+    width: '100%',
+    height: 100,
+    marginVertical: 10,
+    // paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#211071',
+  },
+  boxContent: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  matchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+  },
+  matchScroll: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    height: '80%',
+  },
+  matchBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    verticalAlign: 'middle',
+    width: '100%',
+    height: 100,
+    marginVertical: 10,
+    // paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#211071',
+  },
+  matchLinkBox: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    verticalAlign: 'middle',
+    width: '100%',
+    height: 120,
+    // marginTop: 60,
+    // marginBottom: 60,
+    marginVertical: 60,
+    // paddingVertical: 60,
+  },
+  matchNextBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    verticalAlign: 'middle',
+    width: '100%',
+    height: 120,
+    marginTop: 60,
+    marginBottom: 60,
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    borderRightWidth: 0,
+    borderWidth: 1,
+    borderColor: '#211071',
+  },
+  matchBoxContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  matchLinkBoxContent1: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderBottomLeftRadius: 0,
+    borderTopLeftRadius: 0,
+    borderColor: '#211071',
+  },
+  matchLinkBoxContent2: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    borderColor: '#211071',
+  },
+  matchBr: {
+    borderBottomWidth: 1,
+    borderColor: '#211071',
+    alignSelf: 'stretch',
+    height: 1,
+    width: '100%',
+  },
+  matchTitle: {
+    paddingHorizontal: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  matchButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: 'white',
+    height: 50,
+  },
+  leaderboardContainer: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  primaryButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: '#211071',
+    height: 50,
+  },
+  primaryText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  secondaryButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 15,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: 'white',
+    height: 50,
+  },
+  secondaryText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    maxWidth: 50,
+    backgroundColor: '#F8FAFC',
+    height: 50,
+  },
+  buttonStyleContainer: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'column',
+    paddingBottom: 15,
+    paddingTop: 15,
+    backgroundColor: '#F8FAFC',
+  },
+  buttonInnerContainer: {
+    flex: 1,
+    textAlignVertical: 'center',
+    flexDirection: 'row',
+    paddingBottom: 5,
+    paddingTop: 5,
+    backgroundColor: '#F8FAFC',
+  },
+  gamesView: {
+    left: 0,
+    right: 0,
+    height: 80,
+    width: '100%',
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  gamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    height: 50,
+  },
+});

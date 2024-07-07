@@ -1,4 +1,4 @@
-import { Image, Pressable, View, Text, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Pressable, View, Text, FlatList, ScrollView } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -12,7 +12,6 @@ import {
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from "@react-navigation/native";
-import { styles } from '@/styles/defaultStyles';
 
 interface Leaderboard {
   id: number
@@ -182,3 +181,116 @@ export default function SetBracket() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  boxContent: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  leaderboardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    width: '25%',
+    alignSelf: 'center',
+    textAlign: 'center',
+  },
+  matchScroll: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    height: '80%',
+  },
+  leaderboardContainer: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  leaderboardBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    verticalAlign: 'middle',
+    width: '100%',
+    height: 50,
+    // borderRadius: 8,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: '#211071',
+  },
+  primaryButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 15,
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: '#211071',
+    height: 50,
+  },
+  primaryText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  secondaryButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 15,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    backgroundColor: 'white',
+    height: 50,
+  },
+  secondaryText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  buttonStyleContainer: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'column',
+    // paddingHorizontal: 20,
+    paddingBottom: 15,
+    paddingTop: 15,
+    backgroundColor: '#F8FAFC',
+  },
+  buttonInnerContainer: {
+    flex: 1,
+    textAlignVertical: 'center',
+    flexDirection: 'row',
+    // paddingHorizontal: 20,
+    paddingBottom: 5,
+    paddingTop: 5,
+    backgroundColor: '#F8FAFC',
+  },
+});

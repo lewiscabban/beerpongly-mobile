@@ -139,6 +139,10 @@ export default function AddTournament() {
     setInput(newInput)
   };
 
+  const handelCancel = () => {
+    router.back();
+  }
+
   return (
     <View style={styles.gamesContainer}>
       <View style={{ maxHeight: '80%' }}>
@@ -170,7 +174,7 @@ export default function AddTournament() {
                   }
                 />
                 <Pressable style={styles.deleteButton} onPress={() => handleDeleteTeam(team.id)}>
-                  <MaterialIcons name="delete" size={24} color="#ff0000" />
+                  <MaterialIcons name="delete-outline" size={24} color="#ff0000" />
                 </Pressable>
               </View>
               <Text style={[styles.errorText, team.errorText === "" && {height: 0, paddingBottom: 0}]}>{team.errorText}</Text>
@@ -186,6 +190,9 @@ export default function AddTournament() {
       </View>
       <Text style={[styles.errorText, errorTournamentSizeText === "" && {height: 0, paddingBottom: 0}]}>{errorTournamentSizeText}</Text>
       <View style={styles.buttonStyleContainer}>
+        <Pressable style={styles.cancelButton} onPress={handelCancel}>
+          <MaterialIcons name="arrow-back" size={24} color="#211071" />
+        </Pressable>
         <Pressable style={styles.singleButton} onPress={handleSubmit}>
           <Text style={styles.primaryText}>Save</Text>
         </Pressable>
@@ -329,6 +336,19 @@ const styles = StyleSheet.create({
     marginRight: 15,
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
+    height: 50,
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    maxWidth: 50,
+    backgroundColor: '#F8FAFC',
     height: 50,
   },
   gamesIcon: {
