@@ -1,14 +1,10 @@
 import { StyleSheet, Pressable, View, Text, FlatList, ScrollView } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
-  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
-  Match, createMatchTable, insertMatch, getMatches, updateMatches, getMatch,
-  deleteMatch, deleteMatches,
-  updateMatch,
-  updateTournament
+  Tournament, initTournamentDB, createTournamentTable, getTournament,
+  Team, createTeamTable, getTeams,
+  Match, createMatchTable, getMatches,
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from "@react-navigation/native";
@@ -25,7 +21,6 @@ interface Leaderboard {
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
-  const [tournament, setTournament] = useState<Tournament | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [leaderboard, setLeaderboards] = useState<Leaderboard[]>([]);
@@ -38,7 +33,6 @@ export default function SetBracket() {
       await createTournamentTable(db);
       await createMatchTable(db);
       await createTeamTable(db);
-      setTournament(await getTournament(db, tournamentId));
       setMatches(await getMatches(db, tournamentId));
       setTeams(await getTeams(db, tournamentId));
     }
@@ -104,7 +98,6 @@ export default function SetBracket() {
   }, [teams || matches]);
 
   function onTournamentPress() {
-    // router.back()
     router.replace("games/tournaments/" + tournamentId);
   }
 
@@ -236,7 +229,6 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     width: '100%',
     height: 50,
-    // borderRadius: 8,
     borderWidth: 1,
     borderTopWidth: 0,
     borderColor: '#211071',
@@ -299,7 +291,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'column',
-    // paddingHorizontal: 20,
     paddingBottom: 15,
     paddingTop: 15,
     backgroundColor: '#F8FAFC',
@@ -308,7 +299,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlignVertical: 'center',
     flexDirection: 'row',
-    // paddingHorizontal: 20,
     paddingBottom: 5,
     paddingTop: 5,
     backgroundColor: '#F8FAFC',

@@ -1,13 +1,11 @@
-import { Image, StyleSheet, View, Text, TextInput, Pressable } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Pressable } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
-  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
-  Match, createMatchTable, insertMatch, getMatches, updateMatches, getMatch,
-  deleteMatch, deleteMatches,
-  updateMatch,
-  updateTournament
+  initTournamentDB, getTournament,
+  Team, createTeamTable, getTeams, getTeam,
+  Match, createMatchTable, getMatches, getMatch,
+  updateMatch, updateTournament
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from "@react-navigation/native";
@@ -30,8 +28,6 @@ export default function SettingsScreen() {
   const [errorFirstTeamCupsText, setErrorFirstTeamCupsText] = useState<string>("");
   const [errorSecondTeamCupsText, setErrorSecondTeamCupsText] = useState<string>("");
   const [errorSelectTeamText, setErrorSelectTeamText] = useState<string>("");
-  console.log("tournamanent id: "+ tournamentId)
-  console.log("match id: " + matchId)
 
   useEffect(() => {
     if (match?.winner) {
@@ -64,7 +60,6 @@ export default function SettingsScreen() {
     }
 
     initTeams();
-    console.log("match: " + match)
   }, [match])
 
   useEffect(() => {
@@ -99,19 +94,15 @@ export default function SettingsScreen() {
             } else {
               roundComplete = false;
             }
-            console.log("match complete: " + match.round)
           } 
         }
         tournament.progress = String(round)
-        console.log("round complete: " + roundComplete)
       }
       await updateTournament(db, tournament)
-      console.log("total rounds: " + totalRounds)
     }
   }
 
   const firstTeamWins = () => {
-    console.log("first team wins")
     async function updateFinishedMatch(updatedMatch: Match ) {
       const db = await initTournamentDB();
       await updateMatch(db, updatedMatch);
@@ -145,7 +136,6 @@ export default function SettingsScreen() {
   }
 
   const secondTeamWins = () => {
-    console.log("second team wins")
     async function updateFinishedMatch(updatedMatch: Match ) {
       const db = await initTournamentDB();
       await updateMatch(db, updatedMatch);
@@ -222,7 +212,6 @@ export default function SettingsScreen() {
     }
     else if (winner === firstTeam) {
       if (Number(firstTeamCups) <= Number(secondTeamCups)) {
-        console.log(firstTeamCups + " : " + secondTeamCups)
         setErrorSelectTeam(true)
         setErrorSelectTeamText("The winner must shoot more cups.")
       }
@@ -231,7 +220,6 @@ export default function SettingsScreen() {
       }
     }
     else if (winner === secondTeam) {
-      console.log(secondTeamCups + " " + firstTeamCups)
       if (Number(secondTeamCups) <= Number(firstTeamCups)) {
         setErrorSelectTeam(true)
         setErrorSelectTeamText("The winner must shoot more cups.")

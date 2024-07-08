@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, Pressable, Modal, TouchableOpacity } from 'react-native';
+import {
+  View, Text, FlatList, StyleSheet,
+  Pressable, Modal, TouchableOpacity
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments, getTournament, deleteTournament,
-  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam, deleteTeams,
-  Match, createMatchTable, insertMatch, getMatches, updateMatches, getMatch,
-  deleteMatch, deleteMatches,
-  updateMatch,
-  updateTournament
+  Tournament, initTournamentDB, createTournamentTable,
+  getTournaments, getTournament, deleteTournament,
+  createTeamTable, getTeams, deleteTeams,
+  createMatchTable, getMatches, deleteMatches,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
 
@@ -27,10 +28,6 @@ export default function TabTwoScreen() {
 
     createTables();
   }, [isVisible]);
-
-  useEffect(() => {
-    console.log("inputs: " + inputs.length)
-  }, [inputs])
 
   const delTournament = (item: Tournament) => {
     async function runAsync(item: Tournament) {
@@ -73,21 +70,6 @@ export default function TabTwoScreen() {
   function onGamesPress(item: Tournament) {
     router.push("games/tournaments/" + item.id)
   }
-  
-  function getProgress(item: Tournament): string {
-    if (item.progress != "") {
-      console.log(item)
-      return "In Progress"
-    } 
-    return "New"
-  }
-
-  const renderProgress = ({ item }: { item: Tournament }) => (
-    <View>
-      {}
-      <Text >{getProgress(item)}</Text>
-    </View>
-  )
 
   const renderItem = ({ item }: { item: Tournament }) => (
     <View style={styles.gamesView}>

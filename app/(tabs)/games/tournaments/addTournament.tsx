@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, Pressable, Keyboard, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
-import { Link, router } from 'expo-router';
+import React, { useState, useRef } from 'react';
+import {
+  View, Text, TextInput,
+  StyleSheet, Pressable, NativeSyntheticEvent,
+  TextInputKeyPressEventData, FlatList
+} from 'react-native';
+import { router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournaments,
-  Team, createTeamTable, insertTeam, getTeams,
-  getTotalRounds,
+  initTournamentDB, createTournamentTable, insertTournament,
+  createTeamTable, insertTeam,
 } from '@/db/tournament';
 
 interface InputTeam {
@@ -29,10 +31,8 @@ export default function AddTournament() {
     navigation: '',
     progress: ''
   });
-  const [errorTeamName, setErrorTeamName] = useState<Boolean>(false);
   const [errorTeamNameText, setErrorTeamNameText] = useState<string>("");
   const [errorTournamentSizeText, setErrorTournamentSizeText] = useState<string>("");
-  const [errorImputTeamsText, setErrorInputTeamsText] = useState<string[]>([""]);
 
   const inputRefs = useRef<{ [key: number]: TextInput | null }>({});
 
@@ -92,7 +92,6 @@ export default function AddTournament() {
       const team = newInput.teams[i];
       if (team.name === "") {
         isComplete = false;
-        console.log("Team " + (i + 1) + " cannot be empty.");
         team.errorText = "Team name cannot be empty."
       }
       else {
@@ -121,15 +120,11 @@ export default function AddTournament() {
             await insertTeam(db, "", i + 1, tournamentId);
           }
         }
-        console.log(await getTeams(db, tournamentId));
-        console.log('Saved input:', JSON.stringify(newInput));
         router.push("games/tournaments/" + tournamentId + "/setBracket");
       } catch (error) {
-        console.error('Failed to save input to AsyncStorage', error);
       }
     } else {
       if (newInput.teams.length < 4) {
-        console.log("minimum teams is 4, got: " + newInput.teams.length);
         setErrorTournamentSizeText("minimum teams is 4, got: " + newInput.teams.length)
       }
       else {
@@ -142,6 +137,28 @@ export default function AddTournament() {
   const handelCancel = () => {
     router.back();
   }
+
+  const renderItem = ({ item }: { item: InputTeam }) => (
+    <View>
+      <View key={item.id} style={styles.teamContainer}>
+        <TextInput
+          ref={ref => (inputRefs.current[item.id] = ref)}
+          style={item.errorText === "" ? styles.input : styles.inputError}
+          value={item.name}
+          placeholder={'Team ' + item.id}
+          onChangeText={text => handleTeamChange(item.id, text)}
+          onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) =>
+            handleTeamKeyPress(item.id, event)
+          }
+        />
+        <Pressable style={styles.deleteButton} onPress={() => handleDeleteTeam(item.id)}>
+          <MaterialIcons name="delete-outline" size={24} color="#ff0000" />
+        </Pressable>
+      </View>
+      <Text style={[styles.errorText, item.errorText === "" && {height: 0, paddingBottom: 0}]}>{item.errorText}</Text>
+    </View>
+        
+  );
 
   return (
     <View style={styles.gamesContainer}>
@@ -159,28 +176,12 @@ export default function AddTournament() {
         </View>
         <Text style={[styles.errorText, errorTeamNameText === "" && {height: 0, paddingBottom: 0}]}>{errorTeamNameText}</Text>
         <Text style={styles.inputHeader}>Add Teams:</Text>
-        <ScrollView style={{ maxHeight: '80%' }}>
-          {input.teams.map(team => (
-            <View>
-              <View key={team.id} style={styles.teamContainer}>
-                <TextInput
-                  ref={ref => (inputRefs.current[team.id] = ref)}
-                  style={team.errorText === "" ? styles.input : styles.inputError}
-                  value={team.name}
-                  placeholder={'Team ' + team.id}
-                  onChangeText={text => handleTeamChange(team.id, text)}
-                  onKeyPress={(event: NativeSyntheticEvent<TextInputKeyPressEventData>) =>
-                    handleTeamKeyPress(team.id, event)
-                  }
-                />
-                <Pressable style={styles.deleteButton} onPress={() => handleDeleteTeam(team.id)}>
-                  <MaterialIcons name="delete-outline" size={24} color="#ff0000" />
-                </Pressable>
-              </View>
-              <Text style={[styles.errorText, team.errorText === "" && {height: 0, paddingBottom: 0}]}>{team.errorText}</Text>
-            </View>
-          ))}
-        </ScrollView>
+        <FlatList
+          style={{ maxHeight: '80%' }}
+          data={input.teams}
+          renderItem={renderItem}
+          keyExtractor={(item) => String(item.id)}
+        />
       </View>
       <View style={styles.addGamesView}>
         <Pressable style={styles.addGamesButton} onPress={handleAddTeam}>

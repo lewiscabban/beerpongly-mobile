@@ -2,20 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Link, usePathname, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
-  Team, createTeamTable, insertTeam, getTeams, updateTeams, getTeam,
-  Match, createMatchTable, insertMatch, getMatches, updateMatches,
-  deleteMatch, deleteMatches, Round,
-  Matchup
+  Tournament, initTournamentDB, createTournamentTable, getTournament,
+  Team, getTeams, Match, getMatches, Round,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
 
 
 export default function SettingsScreen() {
   const isVisible = useIsFocused();
-  const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [rounds, setRounds] = useState<Round[]>([]);
@@ -24,7 +19,6 @@ export default function SettingsScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const tournamentId = Number(path.replace("/games/tournaments/", ""));
   const width = Dimensions.get('window').width*0.8;
-  const [lastOffsetX, setLastOffsetX] = useState(0);
 
   function getTeamName(id: number): string {
     for (let i = 0; i < teams.length; i++) {
@@ -40,11 +34,9 @@ export default function SettingsScreen() {
     async function createTables() {
       const db = await initTournamentDB();
       await createTournamentTable(db);
-      setTournament(await getTournament(db, tournamentId));
       setTeams(await getTeams(db, tournamentId));
       let getTournamentMatches = await getMatches(db, tournamentId)
       if (getTournamentMatches.length === 0) {
-        console.log(matches)
         onSetBracketPress()
       }
 
@@ -69,7 +61,6 @@ export default function SettingsScreen() {
         }
       }
       newRounds.push({"id": i, "matches": round, "round": i})
-      console.log(round)
     }
     setRounds(newRounds)
   }, [matches]);
@@ -120,7 +111,6 @@ export default function SettingsScreen() {
   }
 
   const updateindex = (offsetX: number) => {
-    setLastOffsetX(offsetX);
     const nextIndex = Math.round(offsetX / width);
 
     if (nextIndex !== currentIndex) {
@@ -135,9 +125,7 @@ export default function SettingsScreen() {
 
   const handleMomentumScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
-    setLastOffsetX(offsetX);
     const nextIndex = Math.round(offsetX / width);
-    console.log("offset: " + offsetX)
     if (nextIndex !== currentIndex) {
       // setCurrentIndex(nextIndex);
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
@@ -165,13 +153,6 @@ export default function SettingsScreen() {
                 item.winner === null ?
                 <></> :
                 <View>
-                  {/* {
-                    getTeamName(item.secondTeam) === "" && (item.round - (getIndex())) === 1 ?
-                    <></> :
-                    <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                      <Text style={[styles.matchTitleLeft, getHiddenMatchup(item)]}>{item.firstTeamCups}</Text>
-                    </View>
-                  } */}
                   {
                     item.firstTeam != null && item.firstTeam === item.winner ?
                     <MaterialIcons style={[styles.matchTitleLeft, getHiddenMatchup(item)]} name="check" size={22} color="black" /> :
@@ -197,13 +178,6 @@ export default function SettingsScreen() {
                 item.winner === null ?
                 <></> :
                 <View>
-                {/* {
-                  getTeamName(item.secondTeam) === "" && (item.round - (getIndex())) === 1 ?
-                  <></> :
-                  <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
-                    <Text style={[styles.matchTitleLeft, getHiddenMatchup(item)]}>{item.firstTeamCups}</Text>
-                  </View>
-                } */}
                   {
                     item.secondTeam != null && item.secondTeam === item.winner ?
                     <View style={{flex: 1, flexDirection: 'column', width: '100%', alignItems: 'flex-end'}}>
@@ -347,15 +321,10 @@ const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    // flexDirection: 'column',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    // verticalAlign: 'middle',
     width: '100%',
     height: 100,
     marginVertical: 10,
-    // paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#211071',
@@ -379,7 +348,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 100,
     marginVertical: 10,
-    // paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#211071',
@@ -393,10 +361,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     width: '100%',
     height: 120,
-    // marginTop: 60,
-    // marginBottom: 60,
     marginVertical: 60,
-    // paddingVertical: 60,
   },
   matchBoxContent: {
     flex: 1,
@@ -523,7 +488,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'column',
-    // paddingHorizontal: 20,
     paddingBottom: 15,
     paddingTop: 15,
     backgroundColor: '#F8FAFC',
@@ -532,7 +496,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlignVertical: 'center',
     flexDirection: 'row',
-    // paddingHorizontal: 20,
     paddingBottom: 5,
     paddingTop: 5,
     backgroundColor: '#F8FAFC',

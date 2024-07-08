@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, FlatList, View, Text, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, View, Text, Pressable, ScrollView } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
-  Tournament, initTournamentDB, createTournamentTable, insertTournament, getTournament,
-  Team, createTeamTable, insertTeam, getTeams, updateTeams,
-  Match, createMatchTable, insertMatch, getMatches, updateMatches,
-  deleteMatch, deleteMatches,
-  getTotalRounds,
-  Matchup,
-  updateTournament,
+  Tournament, initTournamentDB, createTournamentTable,
+  getTournament, Team, getTeams, updateTeams,
+  Match, createMatchTable, insertMatch, getMatches,
+  updateMatches, deleteMatches,
+  getTotalRounds, Matchup, updateTournament,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
-// import { styles } from '@/styles/defaultStyles';
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
@@ -100,33 +97,25 @@ export default function SetBracket() {
     if (matches.length > 0) {
       await deleteMatches(db, matches)
     }
-    console.log("deleted matches: " + matches)
-
-    // Calculating the total number of rounds
-    
-    console.log("rounds count: " + totalRounds)
     matches = []
 
     // Create initial matches
     for (let i = totalRounds; i >= 0; i--) {
       for (let j = 0; j < Math.pow(2, i) - 1; j+=2) {
-        console.log("teams in round: " + Math.pow(2,i))
-        console.log("creating match")
         let firstTeam: number | null = null;
         let secondTeam: number | null = null;
         if (i == totalRounds) {
-          if (teams[j]) {firstTeam = teams[j].id; console.log(firstTeam)}
-          if (teams[j+1]) {secondTeam = teams[j+1].id; console.log(secondTeam)}
+          if (teams[j]) {firstTeam = teams[j].id}
+          if (teams[j+1]) {secondTeam = teams[j+1].id}
         }
         let result: Match | null = await insertMatch(db, totalRounds - i + 1, firstTeam, secondTeam, 0, 0, null, null, null, null, tournamentId);
-        console.log(result?.firstTeam)
         if (result) {
           matches.push(result);
         }
       }
     }
+
     // return
-    console.log("organising matches: " + matches)
     let lastRound = 1;
     let roundCount = 0;
     let previousRoundCount = 0;
@@ -135,7 +124,6 @@ export default function SetBracket() {
       roundCount = 0;
       for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
-        console.log("round: " + currentRound + " match: " + match.id + " rc: " + roundCount + " match.round: " + match.round)
         if (match.round == currentRound) {
           if (currentRound > 1) {
             matches[i].firstPreviousMatchId = matches[i - previousRoundCount + roundCount].id
@@ -191,7 +179,6 @@ export default function SetBracket() {
         }
         <Text style={styles.matchTitle}>{item.secondTeam.name}</Text>
       </View>
-      {/* <MaterialIcons name="arrow-forward" size={24} color="black" /> */}
     </View>
   );
 
@@ -276,15 +263,10 @@ const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    // flexDirection: 'column',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    // verticalAlign: 'middle',
     width: '100%',
     height: 100,
     marginVertical: 10,
-    // paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#211071',
@@ -327,7 +309,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 100,
     marginVertical: 10,
-    // paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#211071',
@@ -341,10 +322,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     width: '100%',
     height: 120,
-    // marginTop: 60,
-    // marginBottom: 60,
     marginVertical: 60,
-    // paddingVertical: 60,
   },
   matchNextBox: {
     flex: 1,
