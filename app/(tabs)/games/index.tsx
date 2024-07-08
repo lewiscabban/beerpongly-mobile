@@ -11,7 +11,6 @@ import {
   updateTournament
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
-import { styles } from '@/styles/defaultStyles';
 
 
 export default function TabTwoScreen() {
@@ -133,33 +132,33 @@ export default function TabTwoScreen() {
         onRequestClose={() => {setModalTournament(null);}}
       >
         <TouchableOpacity
-          style={modalStyles.modalContainer}
+          style={styles.modalContainer}
           onPress={() => setModalTournament(null)}
         >
-          <TouchableOpacity style={modalStyles.modal} activeOpacity={1} >      
-            <View style={modalStyles.centeredView}>
-              <View style={modalStyles.modalView}>
-                <View style={modalStyles.modalTitleView}> 
+          <TouchableOpacity style={styles.modal} activeOpacity={1} >      
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <View style={styles.modalTitleView}> 
                   <Pressable
                     style={{}}
                     onPress={() => setModalTournament(null)}>
                     <MaterialIcons name="close" size={24} color="#211071"  />
                   </Pressable>
                 </View>
-                <View style={modalStyles.modalContentView}>
-                  <Text style={modalStyles.modalTextHeader}>{modalTournament?.name}</Text>
+                <View style={styles.modalContentView}>
+                  <Text style={styles.modalTextHeader}>{modalTournament?.name}</Text>
                   
-                  <Text style={modalStyles.modalText}>Edit Tournament</Text>
+                  <Text style={styles.modalText}>Edit Tournament</Text>
                   <Pressable
-                    style={[modalStyles.button, modalStyles.buttonCancel]}
+                    style={[styles.button, styles.buttonCancel]}
                     onPress={() => editGameModal(modalTournament)}>
-                    <Text style={modalStyles.textStyle}>Edit</Text>
+                    <Text style={styles.textStyle}>Edit</Text>
                   </Pressable>
-                  <Text style={modalStyles.modalText}>Deleting Tournament</Text>
+                  <Text style={styles.modalText}>Deleting Tournament</Text>
                   <Pressable
-                    style={[modalStyles.button, modalStyles.buttonClose]}
+                    style={[styles.button, styles.buttonClose]}
                     onPress={() => deleteGameModal(modalTournament)}>
-                    <Text style={modalStyles.textStyle}>Delete</Text>
+                    <Text style={styles.textStyle}>Delete</Text>
                   </Pressable>
                 </View>
               </View>
@@ -171,7 +170,7 @@ export default function TabTwoScreen() {
   );
 }
 
-const modalStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -251,5 +250,55 @@ const modalStyles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     width: 150,
+  },
+  gamesContainer: {
+    height: '100%'
+  },
+  addGamesView: {
+    left: 0,
+    right: 0,
+    height: 80,
+    width: '100%',
+    paddingBottom: 15,
+  },
+  gamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    height: 50,
+  },
+  gamesButtonText: {
+    textAlignVertical: 'center',
+    fontSize: 16,
+    lineHeight: 21,
+    marginLeft: 15,
+    marginRight: 15,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  gamesIcon: {
+    marginLeft: 15,
+  },
+  addGamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    height: 50,
+  },
+  gamesView: {
+    left: 0,
+    right: 0,
+    height: 80,
+    width: '100%',
+    paddingBottom: 8,
+    paddingTop: 8,
   },
 });
