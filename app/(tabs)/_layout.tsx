@@ -19,8 +19,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false,
+          headerShown: true,
           title: 'Home',
+          headerStatusBarHeight: 0,
+          headerShadowVisible: false,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),

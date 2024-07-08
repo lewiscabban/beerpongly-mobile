@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 
 interface Box {
   id: string;
@@ -9,32 +9,47 @@ interface Box {
   body: string;
   navigation: string;
   page: string;
+  isReady: boolean;
 }
 
 const data: Box[] = [
-  { id: '1', title: 'Tournament', body: 'Play a tournament.', navigation: '/games', page: 'addTournament' },
-  // { id: '2', title: 'King of the Table', body: 'Consectetur adipiscing elit.', },
-  // { id: '3', title: 'Box 3', body: 'Sed do eiusmod tempor incididunt.', },
-  // { id: '4', title: 'Box 4', body: 'Ut labore et dolore magna aliqua.', },
-  // { id: '5', title: 'Box 5', body: 'Ut enim ad minim veniam.', },
+  { id: '1', title: 'Tournament', body: 'Elemination bracket tournament.', navigation: 'games', page: 'tournaments/addTournament', isReady: true },
+  { id: '2', title: 'King of the Table', body: 'Winner stays on!', navigation: 'games', page: 'kingOfTheHill/addKingOfTheHill', isReady: false },
+  { id: '3', title: 'Season', body: 'Play a full season', navigation: 'games', page: 'season/addSeason', isReady: false },
 ];
 
 export default function HomeScreen() {
+
+  function onCreateGame(item: Box) {
+    if (item.isReady) {
+      router.push(item.navigation + "/" + item.page);
+    }
+  }
+
   const renderItem = ({ item }: { item: Box }) => (
-    <Link href={item.navigation + "/"}>
-      <View style={styles.box}>
-        <View style={styles.boxContent}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.body}>{item.body}</Text>
+    <View style={styles.gamesView}>
+      <Pressable style={styles.gamesButton} onPress={() => onCreateGame(item)}>
+        <View style={{width: '90%'}}>
+          <Text style={styles.gamesTextHeader} >{item.title}</Text>
+          <Text style={styles.gamesTextBody}>{item.body}</Text>
+          { !item.isReady && <Text style={styles.gamesTextComingSoon}>Coming Soon</Text>}
         </View>
-        <MaterialIcons name="arrow-forward" size={24} color="black" />
-      </View>
-    </Link>
+        {
+          item.isReady ?
+          <MaterialIcons name="arrow-forward" size={24} color="#211071"  />
+          :
+          <MaterialIcons name="lock" size={24} color="#211071"  />
+        }
+      </Pressable>
+    </View>
   );
 
   return (
     <View style={styles.container}>
+      {renderItem({item: { id: '1', title: 'Games', body: 'View existing games.', navigation: 'games', page: '', isReady: true}})}
+      <Text style={styles.inputHeader}>Start New Game</Text>
       <FlatList
+        style={{height: "100%"}}
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
@@ -46,29 +61,68 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
+    backgroundColor: '#F8FAFC',
+    position: 'relative',
+    paddingLeft: 10,
+    height: '80%',
+    // flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(248, 250, 252)',
+    alignItems: 'flex-start',
   },
-  box: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: 300,
-    height: 100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  boxContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
+  inputHeader: {
+    alignItems: "center",
+    paddingLeft: 25,
+    paddingVertical: 5,
     fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#211071',
   },
-  body: {
+  gamesView: {
+    left: 0,
+    right: 0,
+    height: 100,
+    width: '100%',
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  gamesButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    height: 50,
+  },
+  gamesTextHeader: {
+    textAlignVertical: 'center',
+    fontSize: 20,
+    lineHeight: 21,
+    marginLeft: 15,
+    marginRight: 15,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  gamesTextBody: {
+    textAlignVertical: 'center',
+    fontSize: 16,
+    lineHeight: 21,
+    marginLeft: 15,
+    marginRight: 15,
+    fontWeight: 'normal',
+    letterSpacing: 0.25,
+    color: '#211071',
+  },
+  gamesTextComingSoon: {
+    textAlignVertical: 'center',
     fontSize: 14,
+    lineHeight: 21,
+    marginLeft: 15,
+    marginRight: 15,
+    fontWeight: 'normal',
+    letterSpacing: 0.25,
+    color: '#211071',
   },
 });

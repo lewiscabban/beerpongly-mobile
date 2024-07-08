@@ -112,6 +112,10 @@ export default function SetBracket() {
     router.replace("games/tournaments/" + tournamentId + "/setBracket");
   }
 
+  const handelCancel = () => {
+    router.replace("games/tournaments/" + tournamentId);
+  }
+
   const renderItem = ({ item }: { item: Leaderboard }) => (
     <View>
       
@@ -169,13 +173,16 @@ export default function SetBracket() {
 
       <View style={styles.buttonStyleContainer}>
         <View style={styles.buttonInnerContainer}>
-        <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
-          <Text style={styles.secondaryText}>Edit</Text>
-        </Pressable>
+          <Pressable style={styles.cancelButton} onPress={handelCancel}>
+            <MaterialIcons name="arrow-back" size={24} color="#211071" />
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
+            <Text style={styles.secondaryText}>Edit</Text>
+          </Pressable>
 
-        <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
-          <Text style={styles.primaryText}>Tournament</Text>
-        </Pressable>
+          <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
+            <Text style={styles.primaryText}>Tournament</Text>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -271,6 +278,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: '#211071',
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    maxWidth: 50,
+    backgroundColor: '#F8FAFC',
+    height: 50,
   },
   buttonStyleContainer: {
     flex: 1,

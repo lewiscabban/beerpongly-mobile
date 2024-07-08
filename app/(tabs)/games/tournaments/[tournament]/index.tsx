@@ -144,6 +144,10 @@ export default function SettingsScreen() {
     }
   };
 
+  const handelCancel = () => {
+    router.replace("games");
+  }
+
   const renderItem = ({ item }: { item: Match }) => (
     <Pressable style={{flex: 1, flexDirection: 'row', width: '100%'}} onPress={() => onPlayMatch(item)}>
       <View style={[styles.box, (item.round - (getIndex())) > 1 && {marginVertical: (((item.round - (getIndex()))-1)*((item.round - (getIndex())))*60)-(((item.round - (getIndex()))-2)*120)-50}, getHiddenMatchup(item)]} >
@@ -313,6 +317,9 @@ export default function SettingsScreen() {
         </View>
         <View style={{padding: 5}}></View>
         <View style={styles.buttonInnerContainer}>
+          <Pressable style={styles.cancelButton} onPress={handelCancel}>
+            <MaterialIcons name="arrow-back" size={24} color="#211071" />
+          </Pressable>
           <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
             <Text style={styles.secondaryText}>Edit</Text>
           </Pressable>
@@ -495,6 +502,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: '#211071',
+  },
+  cancelButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginLeft: 7.5,
+    marginRight: 7.5,
+    borderRadius: 8,
+    elevation: 3,
+    maxWidth: 50,
+    backgroundColor: '#F8FAFC',
+    height: 50,
   },
   buttonStyleContainer: {
     flex: 1,
