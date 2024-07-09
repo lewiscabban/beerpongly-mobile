@@ -131,7 +131,7 @@ export default function AddTournament() {
           navigation: '',
           progress: ''
         })
-        router.replace("games/tournaments/" + tournamentId + "/setBracket");
+        router.push("games/tournaments/" + tournamentId + "/setBracket");
       } catch (error) {
       }
     } else {
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     borderRadius: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8FAFC',
     height: 50,
   },
   cancelButton: {

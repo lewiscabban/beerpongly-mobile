@@ -105,7 +105,7 @@ export default function TabTwoScreen() {
       <View style={styles.addGamesView}>
         <Pressable style={styles.addGamesButton} onPress={onAddGame}>
           <MaterialIcons style={styles.gamesIcon} name="add" size={24} color="#211071" />
-          <Text style={styles.gamesButtonText} >Add Tournament</Text>
+          <Text style={styles.gamesButtonText} >Add Game</Text>
         </Pressable>
       </View>
       <Modal

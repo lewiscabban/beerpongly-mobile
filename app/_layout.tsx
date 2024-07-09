@@ -52,7 +52,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: "rgb(248, 250, 252)"}}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : defaultTheme}>
+        <ThemeProvider value={defaultTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             {/* <Stack.Screen name="tournament/addTournament" options={{ headerShown: false }} />

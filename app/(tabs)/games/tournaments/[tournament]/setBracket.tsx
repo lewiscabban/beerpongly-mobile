@@ -148,7 +148,12 @@ export default function SetBracket() {
   }
 
   const handelCancel = () => {
-    router.replace("games/tournaments/" + tournamentId);
+    if (tournament?.progress) {
+      router.replace("games/tournaments/" + tournamentId);
+    }
+    else {
+      router.back()
+    }
   }
 
   const handleRandomise = () => {
@@ -232,7 +237,7 @@ export default function SetBracket() {
 
       <View style={styles.buttonStyleContainer}>
         <View style={styles.buttonInnerContainer}>
-          {tournament?.progress && 
+          { 
             <Pressable style={styles.cancelButton} onPress={handelCancel}>
               <MaterialIcons name="arrow-back" size={24} color="#211071" />
             </Pressable>
