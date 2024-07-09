@@ -58,7 +58,7 @@ export default function HomeLayout() {
           headerTitle: "Leaderboard",
           headerBackTitle: "Back",
           headerStyle: {backgroundColor: '#F8FAFC'},
-          headerShadowVisible: true,
+          headerShadowVisible: false,
           headerTintColor: "#211071",
           headerBackVisible: false
         }}

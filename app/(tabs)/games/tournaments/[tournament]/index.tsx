@@ -36,7 +36,7 @@ export default function SettingsScreen() {
       await createTournamentTable(db);
       setTeams(await getTeams(db, tournamentId));
       let getTournamentMatches = await getMatches(db, tournamentId)
-      if (getTournamentMatches.length === 0) {
+      if (getTournamentMatches.length === 0 && path.includes("/games/tournaments/") && isVisible) {
         onSetBracketPress()
       }
 

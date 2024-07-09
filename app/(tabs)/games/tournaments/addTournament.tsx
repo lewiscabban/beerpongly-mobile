@@ -77,11 +77,12 @@ export default function AddTournament() {
   const handleSubmit = async () => {
     let newInput = {...input}
     let isComplete: boolean = true;
+    const regex = /^[A-Za-z0-9_ .'-]*$/;
     if(newInput.name === "") {
       setErrorTeamNameText("Please enter a name.")
       isComplete = false
     }
-    else if(!/^[A-Za-z0-9]*$/.test(newInput.name)) {
+    else if(!regex.test(newInput.name)) {
       setErrorTeamNameText("Name can only be digits or letters.")
       isComplete = false
     }
@@ -93,6 +94,10 @@ export default function AddTournament() {
       if (team.name === "") {
         isComplete = false;
         team.errorText = "Team name cannot be empty."
+      }
+      else if(!regex.test(team.name)) {
+        team.errorText = "Team name can only be digits or letters."
+        isComplete = false
       }
       else {
         team.errorText = ""
@@ -120,7 +125,13 @@ export default function AddTournament() {
             await insertTeam(db, "", i + 1, tournamentId);
           }
         }
-        router.push("games/tournaments/" + tournamentId + "/setBracket");
+        setInput({
+          name: '',
+          teams: [{id: 1, name: '', errorText: ''}],
+          navigation: '',
+          progress: ''
+        })
+        router.replace("games/tournaments/" + tournamentId + "/setBracket");
       } catch (error) {
       }
     } else {

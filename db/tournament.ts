@@ -63,18 +63,15 @@ export const createTournamentTable = async (db: SQLite.SQLiteDatabase): Promise<
             progress TEXT NOT NULL
         )
     `);
-    console.log("table: " + table)
 };
 
 export const updateTournament = async (db: SQLite.SQLiteDatabase, tournament: Tournament): Promise<number> => {
     const result = await db.runAsync('UPDATE tournament SET progress = ?, name = ? WHERE id = ?', tournament.progress, tournament.name, tournament.id);
-    console.log("insert: " + result)
     return result.lastInsertRowId
 };
 
 export const insertTournament = async (db: SQLite.SQLiteDatabase, name: string, progress: string): Promise<number> => {
     const result = await db.runAsync('INSERT INTO tournament (name, progress) VALUES (?, ?)', name, progress);
-    console.log("insert: " + result)
     return result.lastInsertRowId
 };
 
@@ -93,7 +90,6 @@ export const deleteTournament = async (db: SQLite.SQLiteDatabase, tournament: To
         DELETE FROM tournament
         WHERE id = ?`,
         tournament.id);
-    console.log("results: " + result)
 };
 
 export const createTeamTable = async (db: SQLite.SQLiteDatabase): Promise<void> => {
@@ -107,20 +103,16 @@ export const createTeamTable = async (db: SQLite.SQLiteDatabase): Promise<void> 
             FOREIGN KEY(tournamentId) REFERENCES tournament(id)
         )
     `);
-    console.log("table: " + table)
 };
 
 export const insertTeam = async (db: SQLite.SQLiteDatabase, name: string, position: number, tournamentId: number): Promise<void> => {
-    console.log("name: " + name + " position: " + position + " id: " + tournamentId)
     const result = await db.runAsync('INSERT INTO team (name, position, tournamentId) VALUES (?, ?, ?)', name, position, tournamentId);
-    console.log("insert: " + result)
 };
 
 export const updateTeams = async (db: SQLite.SQLiteDatabase, teams: Team[]): Promise<void> => {
     for (let i = 0; i < teams.length; i++) {
         const team = teams[i];
         const result = await db.runAsync('UPDATE team SET position = ? WHERE id = ?', team.position, team.id);
-        console.log("results: " + result)
     }
 };
 
@@ -131,7 +123,6 @@ export const deleteTeams = async (db: SQLite.SQLiteDatabase, teams: Team[]): Pro
             DELETE FROM team
             WHERE tournamentId = ?`,
             team.tournamentId);
-        console.log("results: " + result)
     }
 };
 
@@ -169,13 +160,10 @@ export const createMatchTable = async (db: SQLite.SQLiteDatabase): Promise<void>
             FOREIGN KEY(tournamentId) REFERENCES tournament(id)
         )
     `);
-    console.log("table: " + table)
 };
 
 export const insertMatch = async (db: SQLite.SQLiteDatabase, round: number, firstTeam: number | null, secondTeam: number | null, firstTeamCups: number, secondTeamCups: number, winner: number | null, firstPreviousMatchId: number | null, secondPreviousMatchId: number | null, nextMatch: number | null, tournamentId: number): Promise<Match | null> => {
-    // console.log("name: " + name + " position: " + position + " id: " + tournamentId)
     const result = await db.runAsync('INSERT INTO match (round, firstTeam, secondTeam, firstTeamCups, secondTeamCups, winner, firstPreviousMatchId, secondPreviousMatchId, nextMatch, tournamentId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', round, firstTeam, secondTeam, firstTeamCups, secondTeamCups, winner, firstPreviousMatchId, secondPreviousMatchId, nextMatch, tournamentId);
-    console.log("insert: " + result.changes)
     return getMatch(db, result.lastInsertRowId)
 };
 
@@ -204,7 +192,6 @@ export const updateMatches = async (db: SQLite.SQLiteDatabase, matches: Match[])
             match.secondPreviousMatchId,
             match.nextMatch,
             match.id);
-        console.log("results: " + result)
     }
 };
 
@@ -231,7 +218,6 @@ export const updateMatch = async (db: SQLite.SQLiteDatabase, match: Match): Prom
         match.secondPreviousMatchId,
         match.nextMatch,
         match.id);
-        console.log("results: " + result)
 };
 
 export const deleteMatches = async (db: SQLite.SQLiteDatabase, matches: Match[]): Promise<void> => {
@@ -241,7 +227,6 @@ export const deleteMatches = async (db: SQLite.SQLiteDatabase, matches: Match[])
             DELETE FROM match
             WHERE tournamentId = ?`,
             match.tournamentId);
-        console.log("results: " + result)
     }
 };
 
@@ -250,7 +235,6 @@ export const deleteMatch = async (db: SQLite.SQLiteDatabase, match: Match): Prom
         DELETE FROM match
         WHERE id = ?`,
         match.id);
-    console.log("results: " + result)
 };
 
 export const getMatches = async (db: SQLite.SQLiteDatabase, tournamentId: number): Promise<Match[]> => {

@@ -265,6 +265,7 @@ export default function SettingsScreen() {
               style={errorFirstTeamCups ? styles.inputError : styles.input}
               value={firstTeamCups}
               onChangeText={handleFirstTeamCupsChange}
+              keyboardType='number-pad'
             />
           </View>
         </View>
@@ -277,6 +278,7 @@ export default function SettingsScreen() {
               style={errorSecondTeamCups ? styles.inputError : styles.input}
               value={secondTeamCups}
               onChangeText={handleSecondTeamCupsChange}
+              keyboardType='number-pad'
             />
           </View>
         </View>
