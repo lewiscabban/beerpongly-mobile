@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { Pressable, StyleSheet, FlatList, View, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Button } from 'react-native';
 import { Link, usePathname, router } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
@@ -7,6 +7,7 @@ import {
   Team, getTeams, Match, getMatches, Round,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function SettingsScreen() {
@@ -19,6 +20,7 @@ export default function SettingsScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const tournamentId = Number(path.replace("/games/tournaments/", ""));
   const width = Dimensions.get('window').width*0.8;
+  const navigation = useNavigation();
 
   function getTeamName(id: number): string {
     for (let i = 0; i < teams.length; i++) {
@@ -64,6 +66,21 @@ export default function SettingsScreen() {
     }
     setRounds(newRounds)
   }, [matches]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={() => onSetBracketPress()} >
+          <MaterialIcons name="edit" size={24} color="#211071" />
+        </Pressable>
+      ),
+      headerLeft: () => (
+        <Pressable onPress={() => onSetBracketPress()} >
+          <MaterialIcons name="chevron-left" size={32} color="#211071" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   function onLeaderboardPress() {
     router.replace("games/tournaments/" + tournamentId + "/leaderboard");
@@ -291,13 +308,6 @@ export default function SettingsScreen() {
         </View>
         <View style={{padding: 5}}></View>
         <View style={styles.buttonInnerContainer}>
-          <Pressable style={styles.cancelButton} onPress={handelCancel}>
-            <MaterialIcons name="arrow-back" size={24} color="#211071" />
-          </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
-            <Text style={styles.secondaryText}>Edit</Text>
-          </Pressable>
-
           <Pressable style={styles.primaryButton} onPress={onLeaderboardPress}>
             <Text style={styles.primaryText}>Leaderboard</Text>
           </Pressable>

@@ -33,7 +33,7 @@ export default function TabLayout() {
           title: 'Games',
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'game-controller-outline' : 'code-slash-outline'} color={color} />
           ),
         }}
       />

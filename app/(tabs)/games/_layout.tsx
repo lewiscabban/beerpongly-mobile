@@ -1,4 +1,8 @@
 import { Stack } from 'expo-router';
+import { Button } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+type TrailScreenProps = NativeStackScreenProps<{}>;
 
 
 export default function HomeLayout() {
@@ -32,11 +36,12 @@ export default function HomeLayout() {
         options={{
           headerShown: true,
           headerTitle: "Tournament",
-          headerBackTitle: "Back",
+          headerBackVisible: false,
           headerStyle: {backgroundColor: '#F8FAFC'},
           headerShadowVisible: false,
           headerTintColor: "#211071",
-          headerBackVisible: false
+          headerRight: () => <Button title="Edit" />,
+          headerLeft: () => <Button title="Back" />,
         }}
       />
       <Stack.Screen
