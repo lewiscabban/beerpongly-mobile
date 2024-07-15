@@ -75,7 +75,7 @@ export default function SettingsScreen() {
         </Pressable>
       ),
       headerLeft: () => (
-        <Pressable onPress={() => onSetBracketPress()} >
+        <Pressable onPress={() => handelCancel()} >
           <MaterialIcons name="chevron-left" size={32} color="#211071" />
         </Pressable>
       ),

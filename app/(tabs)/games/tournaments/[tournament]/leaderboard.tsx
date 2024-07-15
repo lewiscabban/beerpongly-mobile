@@ -7,7 +7,7 @@ import {
   Match, createMatchTable, getMatches,
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 interface Leaderboard {
   id: number
@@ -26,6 +26,7 @@ export default function SetBracket() {
   const [leaderboard, setLeaderboards] = useState<Leaderboard[]>([]);
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/leaderboard", ""));
+  const navigation = useNavigation();
 
   useEffect(() => {
     async function createTables() {
@@ -39,6 +40,16 @@ export default function SetBracket() {
 
     createTables();
   }, [isVisible]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={() => handelCancel()} >
+          <MaterialIcons name="chevron-left" size={32} color="#211071" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     let newLeaderboard: Leaderboard[] = []
@@ -148,7 +159,7 @@ export default function SetBracket() {
   return (
     <View style={styles.leaderboardContainer}>
       <ScrollView
-        style={{height: '87%'}}
+        style={{height: '100%'}}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
@@ -163,21 +174,6 @@ export default function SetBracket() {
           />
         </View>
       </ScrollView>
-
-      <View style={styles.buttonStyleContainer}>
-        <View style={styles.buttonInnerContainer}>
-          <Pressable style={styles.cancelButton} onPress={handelCancel}>
-            <MaterialIcons name="arrow-back" size={24} color="#211071" />
-          </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={onSetBracketPress}>
-            <Text style={styles.secondaryText}>Edit</Text>
-          </Pressable>
-
-          <Pressable style={styles.primaryButton} onPress={onTournamentPress}>
-            <Text style={styles.primaryText}>Tournament</Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 }
@@ -238,8 +234,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    marginLeft: 7.5,
-    marginRight: 15,
+    marginLeft: 10,
+    marginRight: 10,
     borderRadius: 8,
     elevation: 3,
     backgroundColor: '#211071',

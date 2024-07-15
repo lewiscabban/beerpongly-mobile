@@ -10,6 +10,7 @@ import {
   getTotalRounds, Matchup, updateTournament,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
 export default function SetBracket() {
   const isVisible = useIsFocused();
@@ -19,6 +20,7 @@ export default function SetBracket() {
   const [nextMatchups, setNextMatchups] = useState<Matchup[]>([]);
   const path = usePathname();
   const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
+  const navigation = useNavigation();
 
   useEffect(() => {
     async function createTables() {
@@ -30,6 +32,16 @@ export default function SetBracket() {
 
     createTables();
   }, [isVisible]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={() => handelCancel()} >
+          <MaterialIcons name="chevron-left" size={32} color="#211071" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     let newMatchups: Matchup[] = [];
@@ -237,11 +249,6 @@ export default function SetBracket() {
 
       <View style={styles.buttonStyleContainer}>
         <View style={styles.buttonInnerContainer}>
-          { 
-            <Pressable style={styles.cancelButton} onPress={handelCancel}>
-              <MaterialIcons name="arrow-back" size={24} color="#211071" />
-            </Pressable>
-          }
           <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
             <Text style={styles.secondaryText}>Randomise</Text>
           </Pressable>

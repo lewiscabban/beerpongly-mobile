@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TextInput,
   StyleSheet, Pressable, NativeSyntheticEvent,
@@ -10,6 +10,7 @@ import {
   initTournamentDB, createTournamentTable, insertTournament,
   createTeamTable, insertTeam,
 } from '@/db/tournament';
+import { useNavigation } from '@react-navigation/native';
 
 interface InputTeam {
   id: number;
@@ -33,8 +34,19 @@ export default function AddTournament() {
   });
   const [errorTeamNameText, setErrorTeamNameText] = useState<string>("");
   const [errorTournamentSizeText, setErrorTournamentSizeText] = useState<string>("");
+  const navigation = useNavigation();
 
   const inputRefs = useRef<{ [key: number]: TextInput | null }>({});
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={() => handelCancel()} >
+          <MaterialIcons name="chevron-left" size={32} color="#211071" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   const handleAddTeam = () => {
     const newId = input.teams.length + 1;
@@ -202,9 +214,6 @@ export default function AddTournament() {
       </View>
       <Text style={[styles.errorText, errorTournamentSizeText === "" && {height: 0, paddingBottom: 0}]}>{errorTournamentSizeText}</Text>
       <View style={styles.buttonStyleContainer}>
-        <Pressable style={styles.cancelButton} onPress={handelCancel}>
-          <MaterialIcons name="arrow-back" size={24} color="#211071" />
-        </Pressable>
         <Pressable style={styles.singleButton} onPress={handleSubmit}>
           <Text style={styles.primaryText}>Save</Text>
         </Pressable>

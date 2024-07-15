@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#F8FAFC',
     position: 'relative',
-    paddingLeft: 10,
+    // paddingLeft: 10,
     height: '80%',
     justifyContent: 'center',
     alignItems: 'flex-start',

@@ -8,7 +8,7 @@ import {
   updateMatch, updateTournament
 } from '@/db/tournament';
 import { useEffect, useState } from 'react';
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 
 export default function SettingsScreen() {
@@ -28,6 +28,7 @@ export default function SettingsScreen() {
   const [errorFirstTeamCupsText, setErrorFirstTeamCupsText] = useState<string>("");
   const [errorSecondTeamCupsText, setErrorSecondTeamCupsText] = useState<string>("");
   const [errorSelectTeamText, setErrorSelectTeamText] = useState<string>("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (match?.winner) {
@@ -71,6 +72,16 @@ export default function SettingsScreen() {
 
     createTables();
   }, [isVisible]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={() => handelCancel()} >
+          <MaterialIcons name="chevron-left" size={32} color="#211071" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   async function updateProgress() {
     const db = await initTournamentDB();
@@ -322,9 +333,6 @@ export default function SettingsScreen() {
       </View>
       <View style={styles.buttonStyleContainer}>
         <View style={styles.buttonInnerContainer}>
-          <Pressable style={styles.cancelButton} onPress={handelCancel}>
-            <MaterialIcons name="arrow-back" size={24} color="#211071" />
-          </Pressable>
           <Pressable style={styles.secondaryButton} onPress={onLeaderboardPress}>
             <Text style={styles.secondaryText}>Leaderboard</Text>
           </Pressable>

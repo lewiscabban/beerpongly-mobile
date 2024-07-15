@@ -40,8 +40,6 @@ export default function HomeLayout() {
           headerStyle: {backgroundColor: '#F8FAFC'},
           headerShadowVisible: false,
           headerTintColor: "#211071",
-          headerRight: () => <Button title="Edit" />,
-          headerLeft: () => <Button title="Back" />,
         }}
       />
       <Stack.Screen
@@ -65,7 +63,7 @@ export default function HomeLayout() {
           headerStyle: {backgroundColor: '#F8FAFC'},
           headerShadowVisible: false,
           headerTintColor: "#211071",
-          headerBackVisible: false
+          headerBackVisible: false,
         }}
       />
       <Stack.Screen
