@@ -248,7 +248,7 @@ export default function Edit() {
             <Text style={styles.secondaryText}>Randomise</Text>
           </Pressable>
           <Pressable style={styles.primaryButton} onPress={() => {setModalTournament("create")}}>
-            <Text style={styles.primaryText}>Save</Text>
+            <Text style={styles.primaryText}>Reset</Text>
           </Pressable>
         </View>
       </View>
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalContentView: {
-    alignContent: 'center',
+    alignItems: 'center',
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 15,
@@ -573,6 +573,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 20,
     paddingRight: 20,
+    marginTop: 10,
     height: 40,
     width: 120,
     marginLeft: 10,
@@ -602,7 +603,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalTextHeader: {
-    alignSelf: 'flex-start',
+    // alignSelf: 'flex-start',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
