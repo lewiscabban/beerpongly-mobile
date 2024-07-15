@@ -603,7 +603,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalTextHeader: {
-    // alignSelf: 'flex-start',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
