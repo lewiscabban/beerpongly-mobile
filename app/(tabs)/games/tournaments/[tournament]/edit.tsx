@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, FlatList, View, Text, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, View, Text, Pressable, ScrollView, Modal, TouchableOpacity } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { 
@@ -12,15 +12,16 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native';
 
-export default function SetBracket() {
+export default function Edit() {
   const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [matchups, setMatchups] = useState<Matchup[]>([]);
   const [nextMatchups, setNextMatchups] = useState<Matchup[]>([]);
   const path = usePathname();
-  const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/setBracket", ""));
+  const tournamentId = Number(path.replace("/games/tournaments/", "").replace("/edit", ""));
   const navigation = useNavigation();
+  const [modalTournament, setModalTournament] = useState<string>("");
 
   useEffect(() => {
     async function createTables() {
@@ -155,19 +156,15 @@ export default function SetBracket() {
     if (tournament) {
       await updateTournament(db, {...tournament, progress: "1"})
     }
-    
     router.replace("games/tournaments/" + tournamentId);
   }
 
   const handelCancel = () => {
-    router.back()
+    router.replace("games/tournaments/" + tournamentId);
   }
 
   const handleRandomise = () => {
     async function updateTeamPositions(randomTeams: Team[]) {
-      for (let i = 0; i < randomTeams.length; i++) {
-        randomTeams[i].position = i
-      }
       const db = await initTournamentDB();
       await updateTeams(db, randomTeams);
     }
@@ -250,11 +247,44 @@ export default function SetBracket() {
           <Pressable style={styles.secondaryButton} onPress={handleRandomise}>
             <Text style={styles.secondaryText}>Randomise</Text>
           </Pressable>
-          <Pressable style={styles.primaryButton} onPress={createMatches}>
+          <Pressable style={styles.primaryButton} onPress={() => {setModalTournament("create")}}>
             <Text style={styles.primaryText}>Save</Text>
           </Pressable>
         </View>
       </View>
+      <Modal
+        transparent={true}
+        visible={modalTournament !== ""}
+        onRequestClose={() => {setModalTournament("");}}
+      >
+        <TouchableOpacity
+          style={styles.modalContainer}
+          onPress={() => setModalTournament("")}
+        >
+          <TouchableOpacity style={styles.modal} activeOpacity={1} >      
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <View style={styles.modalTitleView}>
+                  <Pressable
+                    style={{}}
+                    onPress={() => setModalTournament("")}>
+                    <MaterialIcons name="close" size={24} color="#211071"  />
+                  </Pressable>
+                </View>
+                <View style={styles.modalContentView}>
+                  <Text style={styles.modalTextHeader}>Reset Bracket</Text>
+                  <Text style={styles.modalText}>Are you sure you want to reset your bracket, all progress will be lost!</Text>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {setModalTournament("");createMatches()}}>
+                    <Text style={styles.textStyle}>Reset</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
     </View>
   );
 }
@@ -497,5 +527,85 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
     height: 50,
+  },centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal: {
+    width: '90%',
+    height: 200
+  },
+  modalTitleView: {
+    width: '100%',
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalContentView: {
+    alignContent: 'center',
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 15,
+  },
+  button: {
+    borderRadius: 8,
+    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    height: 40,
+    width: 120,
+    marginLeft: 10,
+    marginRight: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonEdit: {
+    backgroundColor: '#211071',
+  },
+  buttonCancel: {
+    backgroundColor: '#2196F3',
+  },
+  buttonClose: {
+    backgroundColor: 'red',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 5,
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  modalTextHeader: {
+    alignSelf: 'flex-start',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    width: 150,
   },
 });

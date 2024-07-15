@@ -55,6 +55,18 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen
+        name="tournaments/[tournament]/edit"
+          options={{
+          headerShown: true,
+          headerTitle: "Edit",
+          headerBackTitle: "Back",
+          headerStyle: {backgroundColor: '#F8FAFC'},
+          headerShadowVisible: false,
+          headerTintColor: "#211071",
+          headerBackVisible: false
+        }}
+      />
+      <Stack.Screen
         name="tournaments/[tournament]/leaderboard"
         options={{
           headerShown: true,

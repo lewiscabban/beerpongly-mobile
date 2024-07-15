@@ -58,7 +58,7 @@ export default function TabTwoScreen() {
 
   const editGameModal = (item: Tournament | null) => {
     if (item) {
-      router.push("games/tournaments/" + item.id + "/setBracket")
+      router.push("games/tournaments/" + item.id + "/edit")
     }
     setModalTournament(null);
   };

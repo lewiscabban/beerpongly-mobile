@@ -113,7 +113,7 @@ export default function SetBracket() {
   }
 
   function onSetBracketPress() {
-    router.replace("games/tournaments/" + tournamentId + "/setBracket");
+    router.replace("games/tournaments/" + tournamentId + "/edit");
   }
 
   const handelCancel = () => {

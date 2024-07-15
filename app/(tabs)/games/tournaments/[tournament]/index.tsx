@@ -39,7 +39,7 @@ export default function SettingsScreen() {
       setTeams(await getTeams(db, tournamentId));
       let getTournamentMatches = await getMatches(db, tournamentId)
       if (getTournamentMatches.length === 0 && path.includes("/games/tournaments/") && isVisible) {
-        onSetBracketPress()
+        onEdit()
       }
 
       setMatches(getTournamentMatches);
@@ -70,7 +70,7 @@ export default function SettingsScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => onSetBracketPress()} >
+        <Pressable onPress={() => onEdit()} >
           <MaterialIcons name="edit" size={24} color="#211071" />
         </Pressable>
       ),
@@ -86,8 +86,8 @@ export default function SettingsScreen() {
     router.replace("games/tournaments/" + tournamentId + "/leaderboard");
   }
 
-  function onSetBracketPress() {
-    router.replace("games/tournaments/" + tournamentId + "/setBracket");
+  function onEdit() {
+    router.replace("games/tournaments/" + tournamentId + "/edit");
   }
 
   function onPlayMatch(item: Match) {
