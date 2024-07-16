@@ -187,12 +187,9 @@ export default function SetBracket() {
     for (let i = 0; i < matches.length; i++) {
       const match = matches[i];
       if (match.winner) {
-        console.log("we have a winner")
         const db = await initTournamentDB();
         let nextMatch = await getMatch(db, match.nextMatch);
-        console.log(match.nextMatch)
         if (nextMatch) {
-          console.log("next match")
           if (nextMatch.firstPreviousMatchId == match.id) {
             nextMatch.firstTeam = match.winner;
           } else if (nextMatch.secondPreviousMatchId == match.id) {
