@@ -130,7 +130,6 @@ export default function SettingsScreen() {
         }
         await updateMatch(db, nextMatch);
       }
-      
     }
 
     if (match) {

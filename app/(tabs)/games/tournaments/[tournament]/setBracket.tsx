@@ -8,6 +8,8 @@ import {
   Match, createMatchTable, insertMatch, getMatches,
   updateMatches, deleteMatches,
   getTotalRounds, Matchup, updateTournament,
+  updateMatch,
+  getMatch,
 } from '@/db/tournament';
 import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native';
@@ -83,6 +85,7 @@ export default function SetBracket() {
       }
       else {
         shuffle(organisedTeams)
+        setTeams(organisedTeams)
       }
       valid = isValid
     }
@@ -140,11 +143,18 @@ export default function SetBracket() {
       for (let j = 0; j < Math.pow(2, i) - 1; j+=2) {
         let firstTeam: number | null = null;
         let secondTeam: number | null = null;
+        let winner: number | null = null;
         if (i == totalRounds) {
+          let firstTeamBye = false
+          let secondTeamBye = false
           if (teams[j]) {firstTeam = teams[j].id}
           if (teams[j+1]) {secondTeam = teams[j+1].id}
+          if (teams[j].name === "") {firstTeamBye = true}
+          if (teams[j+1].name === "") {secondTeamBye = true}
+          if (firstTeamBye && !secondTeamBye) {winner = teams[j+1].id}
+          if (!firstTeamBye && secondTeamBye) {winner = teams[j].id}
         }
-        let result: Match | null = await insertMatch(db, totalRounds - i + 1, firstTeam, secondTeam, 0, 0, null, null, null, null, tournamentId);
+        let result: Match | null = await insertMatch(db, totalRounds - i + 1, firstTeam, secondTeam, 0, 0, winner, null, null, null, tournamentId);
         if (result) {
           matches.push(result);
         }
@@ -173,8 +183,24 @@ export default function SetBracket() {
       }
       lastRound = currentRound;
     }
+    await updateMatches(db, matches)
     for (let i = 0; i < matches.length; i++) {
-      await updateMatches(db, matches)
+      const match = matches[i];
+      if (match.winner) {
+        console.log("we have a winner")
+        const db = await initTournamentDB();
+        let nextMatch = await getMatch(db, match.nextMatch);
+        console.log(match.nextMatch)
+        if (nextMatch) {
+          console.log("next match")
+          if (nextMatch.firstPreviousMatchId == match.id) {
+            nextMatch.firstTeam = match.winner;
+          } else if (nextMatch.secondPreviousMatchId == match.id) {
+            nextMatch.secondTeam = match.winner;
+          }
+          await updateMatch(db, nextMatch);
+        }
+      }
     }
     if (tournament) {
       await updateTournament(db, {...tournament, progress: "1"})

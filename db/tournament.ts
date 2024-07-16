@@ -163,6 +163,7 @@ export const createMatchTable = async (db: SQLite.SQLiteDatabase): Promise<void>
 };
 
 export const insertMatch = async (db: SQLite.SQLiteDatabase, round: number, firstTeam: number | null, secondTeam: number | null, firstTeamCups: number, secondTeamCups: number, winner: number | null, firstPreviousMatchId: number | null, secondPreviousMatchId: number | null, nextMatch: number | null, tournamentId: number): Promise<Match | null> => {
+    console.log(winner)
     const result = await db.runAsync('INSERT INTO match (round, firstTeam, secondTeam, firstTeamCups, secondTeamCups, winner, firstPreviousMatchId, secondPreviousMatchId, nextMatch, tournamentId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', round, firstTeam, secondTeam, firstTeamCups, secondTeamCups, winner, firstPreviousMatchId, secondPreviousMatchId, nextMatch, tournamentId);
     return getMatch(db, result.lastInsertRowId)
 };
