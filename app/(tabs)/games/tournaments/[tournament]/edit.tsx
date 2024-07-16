@@ -12,7 +12,7 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native';
 
-export default function Edit() {
+export default function SetBracket() {
   const isVisible = useIsFocused();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -83,22 +83,31 @@ export default function Edit() {
   }, [matchups]);
 
   function shuffle(array: Team[]) {
-    let currentIndex = array.length;
+    let valid = false
+    while (!valid) {
+      let currentIndex = array.length;
   
     // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-  
-      // Pick a remaining element...
-      let randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-  
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-
-    for (let i = 0; i < array.length; i++) {
-      array[i].position = i+1;
+      let isValid = true
+      while (currentIndex != 0) {
+    
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+      for (let i = 0; i < array.length; i++) {
+        array[i].position = i+1;
+      }
+      for (let i = 0; i < array.length; i+=2) {
+        const firstTeam = array[i];
+        const SecondTeam = array[i+1];
+        if (firstTeam.name === "" && SecondTeam.name === "") {isValid = false}
+      }
+      valid = isValid
     }
   }
 
@@ -156,6 +165,7 @@ export default function Edit() {
     if (tournament) {
       await updateTournament(db, {...tournament, progress: "1"})
     }
+    
     router.replace("games/tournaments/" + tournamentId);
   }
 
@@ -165,6 +175,9 @@ export default function Edit() {
 
   const handleRandomise = () => {
     async function updateTeamPositions(randomTeams: Team[]) {
+      for (let i = 0; i < randomTeams.length; i++) {
+        randomTeams[i].position = i
+      }
       const db = await initTournamentDB();
       await updateTeams(db, randomTeams);
     }

@@ -47,30 +47,45 @@ export default function SetBracket() {
     let newMatchups: Matchup[] = [];
     let count = 0;
     let organisedTeams = [...teams]
-    organisedTeams.sort((n1,n2) => {
-      if (n1.position < n2.position) {
-          return 1;
-      }
-  
-      if (n1.position > n2.position) {
-          return -1;
-      }
-  
-      return 0;
-    })
-    for (let i = organisedTeams.length-1; i > 0; i-=2) {
-      if (i-1 < organisedTeams.length) {
+    let valid = false
+    while (!valid) {
+      let isValid = true
+      for (let i = 0; i < organisedTeams.length; i+=2) {
         const firstTeam = organisedTeams[i];
-        const secondTeam = organisedTeams[i-1];
-        newMatchups.push({
-          id: count,
-          firstTeam: firstTeam,
-          secondTeam: secondTeam,
-        });
-        count++;
+        const SecondTeam = organisedTeams[i+1];
+        if (firstTeam.name === "" && SecondTeam.name === "") {isValid = false}
       }
+      if (isValid) {
+        organisedTeams.sort((n1,n2) => {
+          if (n1.position < n2.position) {
+              return 1;
+          }
+      
+          if (n1.position > n2.position) {
+              return -1;
+          }
+      
+          return 0;
+        })
+        for (let i = organisedTeams.length-1; i > 0; i-=2) {
+          if (i-1 < organisedTeams.length) {
+            const firstTeam = organisedTeams[i];
+            const secondTeam = organisedTeams[i-1];
+            newMatchups.push({
+              id: count,
+              firstTeam: firstTeam,
+              secondTeam: secondTeam,
+            });
+            count++;
+          }
+        }
+        setMatchups(newMatchups);
+      }
+      else {
+        shuffle(organisedTeams)
+      }
+      valid = isValid
     }
-    setMatchups(newMatchups);
   }, [teams]);
 
   useEffect(() => {
@@ -82,22 +97,31 @@ export default function SetBracket() {
   }, [matchups]);
 
   function shuffle(array: Team[]) {
-    let currentIndex = array.length;
+    let valid = false
+    while (!valid) {
+      let currentIndex = array.length;
   
     // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-  
-      // Pick a remaining element...
-      let randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-  
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-
-    for (let i = 0; i < array.length; i++) {
-      array[i].position = i+1;
+      let isValid = true
+      while (currentIndex != 0) {
+    
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+      for (let i = 0; i < array.length; i++) {
+        array[i].position = i+1;
+      }
+      for (let i = 0; i < array.length; i+=2) {
+        const firstTeam = array[i];
+        const SecondTeam = array[i+1];
+        if (firstTeam.name === "" && SecondTeam.name === "") {isValid = false}
+      }
+      valid = isValid
     }
   }
 
