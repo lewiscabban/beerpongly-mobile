@@ -18,8 +18,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: true,
-          title: 'Home',
+          headerShown: false,
+          title: 'Beerpongly',
           headerStatusBarHeight: 0,
           headerShadowVisible: false,
           tabBarIcon: ({ color, focused }) => (

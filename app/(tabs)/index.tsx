@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -46,6 +46,15 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={{flexDirection: 'column', alignSelf: 'center'}}>
+        <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+        <Image style={styles.image} source={require('@/assets/images/beerpongly-logo.png')}></Image>
+        
+        
+        <Text style={styles.titleHeader}>Beerpongly</Text>
+        </View>
+      </View>
+      
       {renderItem({item: { id: '1', title: 'Games', body: 'View existing games.', navigation: 'games', page: '', isReady: true}})}
       <Text style={styles.inputHeader}>Start New Game</Text>
       <FlatList
@@ -103,6 +112,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: '#211071',
+  },
+  titleHeader: {
+    // flex: 1,
+    // textAlignVertical: 'center',
+    // textAlign: 'center',
+    fontSize: 32,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: '#211071',
+    paddingTop: 10,
+    marginLeft: 0,
+  },
+  image: {
+    // flex: 1,
+    width: 50,
+    height: undefined,
+    aspectRatio: 1,
   },
   gamesTextBody: {
     textAlignVertical: 'center',

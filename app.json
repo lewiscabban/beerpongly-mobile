@@ -1,26 +1,22 @@
 {
   "expo": {
-    "name": "beerpongly-mobile",
-    "slug": "beerpongly-mobile",
+    "name": "beerpongly",
+    "slug": "beerpongly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.beerpongly-mobile"
+      "bundleIdentifier": "com.lewiscabban.beerpongly-mobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.lewiscabban.beerpongly"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +28,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d4151b38-4595-4551-93a9-2300c076d974"
+      }
     }
   }
 }
